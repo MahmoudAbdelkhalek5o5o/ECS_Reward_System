@@ -1,0 +1,53 @@
+{% extends "homescreen/layout.html" %}
+{% block body %}
+{% if message %}
+<div class="alert alert-success alert-dismissible" role="alert">
+    {{message}}
+ </div>
+{% endif %}
+ <div class="row">
+    <div class="col-3 .col-md-4">
+        <img src="{{ vendor.img.url }}" alt="img" width="80%"  class="rounded sticky-top">
+        <h6> Listed by <strong> {{ vendor.name }}</strong></h6>
+        {% if request.user.role == "Role.A" %}
+        <form method="post" action="{% url 'delete_vendor' vendor.id %}">
+            {% csrf_token %}
+        <button class="btn btn-outline-danger" type="submit">Delete Vendor</button>
+    </form>
+    {% endif %}
+
+    </div>
+    <div class="col-6">
+            
+                {% for voucher in vouchers %}
+
+                
+                <div class="announcements vouchers col-12 col-md-12">
+        
+                    <a href="#">
+                             
+                <p class="p"> Voucher ammount: {{ voucher.points_equivalent }} Points </p>
+                <i class="i"> End Date: {{ voucher.end_date }}</i>
+                {% if not request.user.role == "Role.A" %}
+                <form method="post" action="{% url 'redemption_request' voucher.id %}">
+                    {% csrf_token %}
+                <button class="btn btn-outline-success" type="submit">chose voucher</button>
+            </form>
+            
+            {% endif %}
+          
+           
+            </a>
+            </div>
+             
+              {% endfor %}
+              
+        
+       
+</div>
+
+
+
+
+
+{% endblock %}

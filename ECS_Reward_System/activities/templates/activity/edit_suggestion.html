@@ -1,0 +1,45 @@
+{% extends "homescreen/layout.html" %}
+{% block body %}
+<center>
+    <h1>Edit the Suggestion</h1>
+
+    <form method = "POST" action = "">
+        {% csrf_token %}
+        {{form.as_p}}
+        <label class="form-check-label" for="flexRadioDefault1"> 
+            Points:
+            <br>
+            <input type= 'number' class='form-control', style= 'width:350px' name = 'points' required>
+        </label>
+        <br>
+        <br>
+        <label class="form-check-label" for="flexRadioDefault1"> 
+            Start Date:
+            <br>
+            <input type= 'date' class='form-control', style= 'width:350px' name = 'start_date' required>
+        </label>
+        <br>
+        <br>
+        <label class="form-check-label" for="flexRadioDefault1"> 
+            End Date:
+            <br>
+            <input type= 'date' class='form-control', style= 'width:350px' name = 'end_date' required>
+        </label>
+        <br>
+        <br>
+        <label class="form-check-label" for="flexRadioDefault1"> 
+            Attachment Mandatory:
+            <br>
+        <select name="attachment_mandatory" class='form-control', style= 'width:350px'>
+            <option value="True">Needed</option>
+            <option value="False">Not Needed</option>
+        </select>
+    <br>
+    <br>
+<button type="submit" class = "btn btn-info" style = "background-color: #1C77B6;width:250px">Update and submit</button>
+</form>
+<br>
+
+<!-- <a href="after_choose.html" class="btn ">Submit</a> -->
+</center>    
+{% endblock %}

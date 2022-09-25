@@ -1,0 +1,47 @@
+.listings{
+    text-align: center;
+    margin: 10px;
+}
+p , h6 ,h4{
+    width: 450px; 
+    
+    
+    
+}
+.parent{
+    
+    white-space: nowrap;
+    
+}
+.child{ 
+
+    display: inline-block; 
+}
+#algin-form{
+    display: inline;
+}
+p.wrap{
+
+    word-break: break-all;
+
+}
+a{
+
+    color: black;
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+}
+
+a:hover{
+    text-decoration: none;
+    color: black;
+    
+}
+.item{
+
+    float: left;
+}
+.link{
+    color: blue;
+}

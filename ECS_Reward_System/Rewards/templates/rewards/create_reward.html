@@ -1,0 +1,40 @@
+{% extends "homescreen/layout.html" %}
+{% block body %}
+<center>
+    {% if message %}
+        <div class="alert alert-success alert-dismissible" role="alert">
+           {{message}}
+        </div>
+        {% elif warning_message %}
+        <div class="alert alert-warning alert-dismissible" role="alert">
+          {{warning_message}}
+       </div>
+    {% endif %}
+<h1 class="title"> Create Reward</h1>
+</center>
+        <br>
+        <div class="glow">
+            <form action="{% url 'create_reward' %}" method="post">
+              {% csrf_token %}
+               <div class="form-group">
+                  <label><strong>Vendor Name: </strong></label>
+                  <input type="text" class="form-control" placeholder="Vendor name" name="name"  required = True>
+               </div>
+               <div class="form-group">
+                <label>start_date: </label>
+               <input type="date" class="form-control" placeholder="Start_Date" name="start_date" required = True>
+              </div>
+               <div class="form-group">
+                <label>End Date: </label>
+               <input type="date" class="form-control" placeholder="End_Date" name="end_date">
+              </div>
+              <div class="form-group">
+                <label>Equivalent Points: </label>
+               <input type="number" class="form-control" placeholder="Equivalent_points" name="points_equivalent" required = True>
+              </div>
+            <button type="submit">Submit</button>
+          </form>
+        </div>
+
+        
+{% endblock %}

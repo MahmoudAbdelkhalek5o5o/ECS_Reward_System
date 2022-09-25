@@ -1,0 +1,49 @@
+{% extends "homescreen/layout.html" %}
+{% block body %}
+<center>
+<h2>Update Profile information:</h2>
+    <div class="row my-3 p-3">
+        <img class="rounded-circle account-img" src="{{ user.profile.avatar.url }} " style="cursor: pointer;"/>
+    </div>
+    {% if message %}
+        <div class="alert alert-danger alert-dismissible" role="alert">
+           {{message}}
+        </div>
+    {% endif %}
+</center>
+    <div class="glow">
+    <div class="form-content">
+        <form method="post" enctype="multipart/form-data" action="{% url 'user_edit' %}">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="col-md-5">
+                    <div class="form-group">
+                        <label class="small mb-1">Username:</label>
+                            {{ user_form.username }}
+                        <label class="small mb-1">Email:</label>
+                            {{ user_form.email }}
+                    </div>
+                    <label class="small mb-1">Phone Number:</label>
+                    {{ user_form.phone_number }}
+                    <label class="small mb-1">First Name:</label>
+                    {{ user_form.first_name }}
+                    <label class="small mb-1">Last Name:</label>
+                    {{ user_form.last_name }}
+                        
+                    <div class="form-group">
+                        <a href="{% url 'change_password' %}">Change Password</a>
+                        <hr>
+                        <label class="small mb-1">Change Image:</label>
+                        {{ user_form.img }}
+                       
+                        <br><br>
+                        
+                  
+            </div>
+            <br><br>
+            <button type="submit" class="btn btn-dark btn-lg">Save Changes</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

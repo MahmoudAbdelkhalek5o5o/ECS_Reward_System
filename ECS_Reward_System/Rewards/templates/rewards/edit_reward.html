@@ -1,0 +1,34 @@
+{% extends "homescreen/layout.html" %}
+{% block body %}
+  <center>  
+        {% if Message %}
+        <div class="alert alert-success alert-dismissible" role="alert">
+           {{Message}}
+        </div>
+    {% endif %}
+    
+        <h1 class="title"> Reward Suggestion Requests</h1>
+        <br>
+
+{% for suggestion_request in suggestion_requests%}
+    
+    <div class="glow">
+               <div class="form-group">
+                  <label>Vendor Name: {{suggestion_request.vendor}}</label>     
+               </div>
+               <div class="form-group">
+                <label>Website: {{suggestion_request.website}}</label>
+               </div>
+
+               <div class="form-group">
+                <label>Reason Why: {{suggestion_request.reason}} </label>
+               </div>
+
+
+               <a href="{% url 'edit_approve_reward_suggestion' suggestion_request.id %}" ><button type="submit" class = "btn btn-info" style = "background-color: #1C77B6;width:200px"> Approve </button></a>
+              <a href="{% url 'delete_reward_suggestion' suggestion_request.id %}" ><button type="submit" class = "btn btn-info" style = "background-color: #e2331c;width:200px" >Decline </button></a>
+    </div>
+         <br>
+        {%endfor%}
+    
+{% endblock %}

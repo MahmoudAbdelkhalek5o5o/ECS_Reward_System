@@ -1,0 +1,59 @@
+{% extends "homescreen/layout.html" %}
+{% block body %}
+<center>
+    {% if message %}
+        <div class="alert alert-success alert-dismissible" role="alert">
+           {{message}}
+        </div>
+        {% elif warning_message %}
+        <div class="alert alert-warning alert-dismissible" role="alert">
+          {{warning_message}}
+       </div>
+       {% elif error_message %}
+        <div class="alert alert-danger alert-dismissible" role="alert">
+           {{error_message}}
+        </div>
+    {% endif %}
+</center>
+    
+       
+<h1 class="title" style="text-align: center;"> Create Category</h1>
+        <br>
+        <div class="glow">
+            <form action="{% url 'activities:create_category' %}" method="post">
+              {% csrf_token %}
+               <div class="form-group">
+                  <label><strong>Category Name: </strong></label>
+                  <input type="text" class="form-control" placeholder="Category Name" name="name"  required = True>
+               </div>
+               <div class="form-group">
+                <label><strong>Description: </strong></label>
+                <input type="text" class="form-control" placeholder="Description" name="description"  required = True>
+             </div>
+             <div class="form-group">
+              <label>Start Date: </label>
+             <input type="date" class="form-control" placeholder="Start_Date" name="start_date" required = True>
+            </div>
+               <div class="form-group">
+                <label>End Date: </label>
+               <input type="date" class="form-control" placeholder="End_Date" name="end_date">
+              </div>
+              <div class="form-group">
+                <label>Owner: </label>
+                <select class="form-control" placeholder="Owner" name="owner" required = True>
+                  {% for owner in category_owners %}
+                  <option value="{{owner.username}}">{{owner.username}}</option>
+                  {% endfor %}
+
+                </select>
+               
+              </div>
+              <div class="form-group">
+                <label>Budget: </label>
+               <input type="number" class="form-control" placeholder="Budget" name="Budget" required = True>
+              </div>
+            <button type="submit">Submit</button>
+          </form>
+        </div>
+        
+{% endblock %}

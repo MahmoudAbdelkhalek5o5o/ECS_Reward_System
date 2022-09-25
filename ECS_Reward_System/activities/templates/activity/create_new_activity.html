@@ -1,0 +1,52 @@
+{% extends "homescreen/layout.html" %}
+{% block body %}
+<center>
+    {% if message %}
+
+        <div class ="alert alert-success alert dismissible" role="alert" >
+            {{message}}
+        </div>
+        {% elif error_message %}
+
+        <div class ="alert alert-danger alert dismissible" role="alert" >
+            {{error_message}}
+        </div>
+        
+    {%endif%}
+
+    {% if failure_message %}
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        {{failure_message}}
+     </div>
+    {% endif %}
+
+            <h1> Create new activity</h1>
+    <br>
+    <form method="post" action="{% url 'activities:create_new_activity' %}">
+        {% csrf_token %}
+        
+        <select class="form-select" aria-label="Default select example" required = True name = "category_select">
+          {% for category in activity_category %}
+            
+            <option value="{{category.id}}">{{category.category_name}}</option>
+            {% endfor %}
+          </select>
+          
+          
+          <br>
+          <br>
+         
+          {{ form }}
+        <br>
+        <br>
+      
+          
+        {% if not request.user.role == "Role.E" %} 
+        <button type="submit">Submit</button>
+    
+    
+        {%endif%}
+
+      </form>
+</center> 
+{% endblock %}

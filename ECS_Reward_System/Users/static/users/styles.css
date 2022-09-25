@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@600&display=swap%27');
+body {
+    font-family: 'Cairo', sans-serif;
+}
+img{
+    margin-left: -24px;
+}
+
+.main-head{
+    height: 150px;
+    background: #FFF;
+   
+}
+
+.sidenav {
+    height: 100%;
+    background-color: #1C77B6;
+    overflow-x: hidden;
+    padding-top: 20px;
+}
+
+
+.main {
+    padding: 0px 10px;
+}
+
+@media screen and (max-height: 450px) {
+    .sidenav {
+        padding-top: 15px;
+     
+       
+    }
+}
+
+@media screen and (max-width: 450px) {
+    .navbar{
+        width: 130%;
+    }
+    .login-form{
+        margin-top: 10%;
+    }
+
+    .register-form{
+        margin-top: 10%;
+    }
+    img{
+        display: none;
+    }
+    
+   
+ 
+}
+.profile{
+    margin-top: 30px;
+}
+@media screen and (min-width: 768px){
+    .main{
+        margin-left: 40%; 
+    }
+  
+
+    .sidenav{
+        width: 40%;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        left: 0;
+    }
+
+    .login-form{
+        margin-top: 10%;
+    }
+
+    .register-form{
+        margin-top: 20%;
+    }
+}
+
+
+.login-main-text{
+    margin-top: 20%;
+    padding: 60px;
+    color: #fff;
+}
+
+.login-main-text h2{
+    font-weight: 300;
+}
+
+.btn-blue{
+    background-color: #FFF !important;
+    color: #000;
+    border: #1C77B6 solid 2px;
+}
+.avatar{
+    width:100px;
+    border-radius: 50%;
+}

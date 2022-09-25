@@ -1,0 +1,87 @@
+{% extends "homescreen/layout.html" %}
+{% block body %}
+<div class="container">
+  
+    <h1>My Points</h1>
+  
+    <div class="tabs">
+      <div class="tabby-tab">
+        <input type="radio" id="tab-1" name="tabby-tabs" checked>
+        <label for="tab-1">About to expire</label>
+        <div class="tabby-content">
+          {% if points %}
+          {% for point in points %}
+          <section>
+          <p>points: {{point.points}}</p>
+          </section> 
+          <section>
+            <p>EGP: {{point.ammounts}}</p>
+          </section>
+          
+          <section>
+          <p>Expires at: {{point.end_date}}</p> 
+        </section>
+        
+    
+        {% endfor %}
+        {% else %}
+          <h3>No About to expire Points!</h3>
+        {% endif %}
+        </div>
+      </div>
+  
+      <div class="tabby-tab">
+        <input type="radio" id="tab-2" name="tabby-tabs">
+        <label for="tab-2">Recently Used</label>
+        <div class="tabby-content">
+          {% if used_points %}
+          {% for point in used_points %}
+          <section>
+          <p>points: {{point.points}}</p>
+          </section> 
+          <section>
+            <p>EGP: {{point.ammounts}}</p>
+          </section>
+          
+          <section>
+          <p>Expires at: {{point.end_date}}</p> 
+        </section>
+        
+    
+        {% endfor %}
+        {% else %}
+          <h3> No Used Points! </h3>
+        {% endif %}
+  
+        </div>
+      </div>
+  
+      <div class="tabby-tab">
+        <input type="radio" id="tab-3" name="tabby-tabs">
+        <label for="tab-3">Expired points</label>
+        <div class="tabby-content">
+          {% if expired_points %}
+          {% for point in expired_points %}
+          <section>
+          <p>points: {{point.points}}</p>
+          </section> 
+          <section>
+            <p>EGP: {{point.ammounts}}</p>
+          </section>
+          
+          <section>
+          <p>Expires at: {{point.end_date}}</p> 
+        </section>
+        
+
+            {% endfor %}
+            {% else %}
+            <h3>No expired points</h3>
+            {% endif %}
+        </div>
+      </div>
+  
+      </div>
+      
+    </div>
+{% endblock %}

@@ -1,0 +1,15 @@
+
+-EMPID is the primary key instead of the username(username should still be unique)
+-In mysql we can save photos as BLOB, but it's not a best practice to save photos directly in the database 
+ so we suggest storing the photos somewhere(physical machine or cloud(cloud is recomended))
+ and only save their path/URL inside the database
+ -Remove the role table and store the roles as enum. That saves us lookup time and role table doesn't have any CRUD operations and only have three entries no more
+  (it is more of a dictionary than a table)
+-Rename tables activities and subactivities to Categories and activities In addition to renaming the attributes inside each table.
+- Drop dynamic menu table (UI elements that don't need to be stored inside the database as it is fixed )
+- Drop post table as it is a draft (deleted from the 'Screens initial draft.ptx' propsed).
+- Drop status table and insert Status field of type enum('Approved','Declined','Pending') in both redemption requests and activivty requests tables.
+- remove evidence needed attribute from request table (proof of actio attribute is sufficient)
+- Rename Redeem Master data to vendors Rename redeem sub master data to voucher 
+-Remove start and end date from vendor(Master data)
+-Add a notification table.

@@ -1,0 +1,26 @@
+{% extends "homescreen/layout.html" %}
+{% block body %}
+<center>
+    {% if Message %}
+    <div class="alert alert-warning alert-dismissible" role="alert">
+        {{Message}}
+     </div>
+     {% elif success %}
+     <div class="alert alert-success alert-dismissible" role="alert">
+        {{success}}
+     </div>
+
+     {% endif %}
+
+        <h1 class="title"> Update Category</h1>
+      </center>
+      <div class="glow">
+            <form action="" method="post">
+              {% csrf_token %}
+              {{category_edit_form}}
+            <!-- <button type="submit">Update</button> -->
+            <!-- <button  class="btn-blue" type="submit">Update </a></button> -->
+            <button class = "btn btn-info mt-2" type="submit" style = "background-color: #1C77B6;">Update</button>
+          </form>
+         </div>
+{% endblock %}

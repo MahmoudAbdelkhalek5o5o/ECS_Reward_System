@@ -1,0 +1,18 @@
+{% extends "homescreen/layout.html" %}
+{% block body %}
+    <div class="container">
+    <label class="label">
+
+    
+    <h3 class="p2">{{ announcement.creator.username }}</h3>
+    <p class="p2"> {{ announcement.PostText }}</p>
+    <i class="i2"> {{ announcement.EndDate }}</i>
+    {% if request.user.role == 'Role.A' %}
+    <form method="post" name="Delete" action="{% url 'delete_announcements' announcement.id %}">
+        {% csrf_token %}
+        <button class="b2" type="submit">Delete</button>
+    </form>
+    {% endif %}
+</label>
+</div>
+{% endblock %}

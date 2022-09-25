@@ -1,0 +1,32 @@
+{% extends "homescreen/layout.html" %}
+{% block body %}
+
+<div>
+<h1 class="header" >Activity Requests:</h1>
+</div>
+<div class="row req">
+    {% for activity_submission in activity_submissions %}
+ 
+    <div class="col-6 col-md-6 col-sm-12">
+    
+
+            <a href="{% url 'activities:submission_admin' activity_submission.id %}">
+                <button class="label" type="button">        
+        <p> {{ activity_submission.emp.username }}</p>
+        <p> {{ activity_submission.activity }}
+            
+        <br>
+            {{ activity_submission.submission_date }}
+            <br>
+            {% if  activity_submission.status   == "Status.A" %}<h3>Accepted</h3>
+        {% elif activity_submission.status == "Status.D" %}<h3>Declined</h3>{% endif %}
+        </p>
+        </button>
+        </a>
+        
+        
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

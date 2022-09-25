@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link href="{% static 'homescreen/styles.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+ 
+</head>
+<body>
+    {% if user.is_authenticated %}
+
+
+    <nav class="navbar">
+
+      
+      <ul class="nav-links">
+        <div class="logo" style="float: left;">ECS</div>
+        <input type="checkbox" id="checkbox_toggle" />
+        <label for="checkbox_toggle" class="hamburger">&#9776;</label>
+        <div class="menu">
+          <li><a href="{% url 'users-home' %}">Home</a></li>
+          <li class="dropdown_item">
+          <a href="#">Activity</a>
+          <ul class="dropdown">
+            {% if not request.user.role == "Role.E" %}
+            <li><a href="{% url 'activities:view_activity_suggestion_requests' %}">Suggestions</a></li>
+            
+            {% endif %}
+    
+            <li><a href="{% url 'activities:Category_view' %}">Activity</a></li>
+            {% if request.user.role == "Role.M" %}
+            <li><a href="{% url 'activities:activity_submission_view' %}">Submissions</a></li>
+            {% elif request.user.role == "Role.A" %}
+            <li><a href="{% url 'activities:create_category' %}">Create category</a></li>
+            <li><a href="{% url 'activities:view_not_approved_activities' %}">Not Approved</a></li>
+
+            <li><a href="{% url 'activities:admin_view_submission' %}">Submissions</a></li>
+
+            {% endif %}
+            {% if not request.user.role == "Role.A" %}
+            <li><a href="{% url 'activities:activity_request_view'%}">My submissions</a></li>
+            
+            {% endif %}
+          </ul>
+
+          </li>
+          <li class="dropdown_item">
+            <a href="#">Rewards</a>       
+            <ul class="dropdown">
+              <li><a href="{% url 'all_vendors' %}">Vendors</a></li>
+              {% if not request.user.role == "Role.A" %}
+              <!-- <li><a href="{% url 'activities:about_to_expire' %}">My Points </a></li> -->
+              <li><a href="{% url 'suggest_rewards' %}">Suggest reward</a></li>
+              {% else %}
+              <!-- <li><a href="{% url 'create_vendor' %}">Create Vendor</a></li>
+              <li><a href="{% url 'create_reward' %}">Create reward</a></li> -->
+              <li><a href="{% url 'admin_view_redemption_requests' %}">redemption requests</a></li>
+              <li><a href="{% url 'edit_reward' %}">Reward Suggestions</a></li>
+             
+              
+              
+              
+              {% endif %}
+              
+              
+              
+            </ul>
+          </li>
+          <li class="dropdown_item">
+            <a href="/">User</a>       
+            <ul class="dropdown">
+              {% if request.user.role == "Role.A"%}
+          <li><a href="{% url 'register_request' %}">Register Requests</a></li>
+          <li><a href="{% url 'all_profiles' %}">Profiles</a></li>
+          {% else %}
+          <li><a href="{% url 'activities:about_to_expire' %}">My Points </a></li>
+          {% endif %}
+              
+             
+            </ul>
+          </li>
+         
+          {% if request.user.role == "Role.A"%}
+          <li><a href="{% url 'make_budget' %}"> Budget </a></li>
+          <li><a href="{% url 'archive' %}"> Archive </a></li>
+
+          {% endif %}
+          
+          
+          <li><a href="/">About</a></li>
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+          <li><div class="thumb-sm"><img src="{{request.user.img.url}}" style="height:68px ; border-radius:50% ; " ></div></li>
+        </div>
+      </ul>
+    </nav>
+    <button class="btn" onclick="history.back()" ><u style="font-size:20px">⇦ Back</u> </button>
+ 
+
+
+    {% endif %}
+    {% block body %}
+    {% endblock %}
+    
+</body>
+</html>

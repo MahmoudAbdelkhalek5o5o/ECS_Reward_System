@@ -1,0 +1,62 @@
+{% extends "homescreen/layout.html" %}
+{% block body %}
+<center>
+    <h1>Activity Suggestions</h1>
+{% for activity_suggestion in suggestion_requests %}
+
+<div class="card" style="width:597px">
+    <div class="card-header">
+        {{activity_suggestion.activity_name}}  
+    </div>
+    <div class="card-body">
+        <!-- <h5 class="card-title"> Activity name: {{ ActivityCategory.activity_description }}</h5> -->
+        <p class="card-text" id = "activities">     
+            <ul>
+                    <label class="form-check-label" for="flexRadioDefault1"> 
+                        Category: {{ activity_suggestion.category.category_name }}
+                    </label>
+                    <br>
+                    <br>
+                        <label class="form-check-label" for="flexRadioDefault1"> 
+                        Description: {{ activity_suggestion.activity_description }}
+                    </label>
+                    <br>
+                    <br>
+                        <label class="form-check-label" for="flexRadioDefault1"> 
+                        Justification: {{ activity_suggestion.justification }}
+                    </label>
+                    <br>
+                    <br>
+                        <label class="form-check-label" for="flexRadioDefault1"> 
+                        Evidence Needed: {{ activity_suggestion.evidence_needed }}
+                    </label>
+                    <br>
+                    <br>
+                    <label class="form-check-label" for="flexRadioDefault1"> 
+                    <!-- {% if request.user.role == "Role.M" %}
+                        <form type = "submit" action="" id = "pointsform">
+                            Points: <input style = "width:100px;justify-content:center;align-items: center" type="number" step = 1 min = 0 required name = 'points'>
+                        </form>
+                    {% endif %} -->
+                    </label>
+                    <div class="container">
+                        <div class="row">
+                          <div class="col-sm">
+                            <a href = "{% url 'activities:edit_suggestion_and_submit' activity_suggestion.id %}"><button class = "btn btn-info" type="submit" style = "background-color: #1C77B6;">Edit Suggestion</button></a>
+                          </div>
+                          <div class="col-sm">
+                            <a href = "{% url 'activities:delete_suggestion' activity_suggestion.id %}"><button class = "btn btn-danger" type="submit">Delete</button></a>
+                          </div>
+                        </div>
+                      </div>
+            </ul>
+        </p>
+    </div>
+</div>
+<br>
+{% endfor %}
+<br>
+
+<!-- <a href="after_choose.html" class="btn ">Submit</a> -->
+</center>    
+{% endblock %}

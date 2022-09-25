@@ -1,0 +1,39 @@
+{% extends "homescreen/layout.html" %}
+{% block body %}
+<center>
+    <ul>
+    {% if activity %}
+    <h1>Activity Requests</h1>
+        {% for ActivityRequests in activity %}
+        <div class="card" style="width:600px">
+        <div class="card-header">
+            Activity Request {{forloop.counter}}
+        </div>
+        <div class="card-body">
+            <h5 class="card-title"> Activity name: {{ ActivityRequests.activity}}</h5>
+            <p class="card-text"> 
+                <ul>
+                    <li>Category Name: {{ActivityRequests.category.category_name}}</li>
+                    <li>Status: <p style = "font-size:25px;color:rgb(210, 101, 6)">{% if  ActivityRequests.status == "Status.P" %} Pending {% endif %}</p>
+                        <p style = "font-size:25px;color:green">{% if  ActivityRequests.status == "Status.A" %} Approved {% endif %}</p>
+                        <p style = "font-size:25px;color:rgb(255, 1, 1)">{% if  ActivityRequests.status == "Status.D" %} Declined {% endif %}</p>
+                    </li>
+                    <li>Submission Date: {{ ActivityRequests.submission_date }}</li>
+                    <li>Activity Approval Date: {{ ActivityRequests.activity_approval_date }}</li>
+                        </ul> 
+                    </ul>
+
+            </p>
+        </div>
+    </div>
+    <br>
+
+
+    <!-- <strong> {{forloop.counter}}</strong> -->
+        {% endfor %}
+    {% else %}
+    <h1>No Activity Request</h1>
+    {% endif %}
+
+</center>
+{% endblock %}

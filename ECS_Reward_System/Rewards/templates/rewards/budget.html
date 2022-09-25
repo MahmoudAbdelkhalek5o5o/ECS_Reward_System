@@ -1,0 +1,89 @@
+{% extends "accounts/layout.html" %}
+{% block body %}
+<center>
+    {% if message %}
+        <div class="alert alert-success alert-dismissible" role="alert">
+           {{message}}
+        </div>
+        {% elif warning_message %}
+        <div class="alert alert-warning alert-dismissible" role="alert">
+          {{warning_message}}
+       </div>
+    {% endif %}
+    
+    <h4> Remaining Budget is {{current_budget.budget}}EGP</h4>
+    <h4> System Budget is {{current_budget.budget_compare}}EGP</h4>
+    <h5>{{budget_used_percentage}}% of the budget is Remaining</h5>
+
+</center>
+
+         <div class="center">
+        <h1 class="title"> Add Budget </h1>
+      </div>
+        <br>
+       <div id="1C77B6" style="width: 30%;">
+    <canvas id="pie-chart"></canvas>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+        <div class="glow">
+         
+            <form action="{% url 'make_budget' %}" method="post">
+              {% csrf_token %}
+  
+               <div class="form-group">
+                  <label><strong>Budget: </strong></label>
+                  
+                  <input type="number" class="form-control" placeholder="budget" name="budget"  required = True>
+               </div>
+               {% if newyear %}
+               <center>
+               <div class="form-group">
+              
+                <input type="number" class="" placeholder="points" name="points" required = True/>
+            
+               
+               to
+              
+               
+               
+               <input type="number" name = "EGP" placeholder = "EGP" required = True>
+              </div>
+              {% endif %}
+        
+
+
+            <button type="submit">Submit</button>
+         </center>
+          </form>
+          <script>
+
+            var config = {
+              type: 'pie',
+              data: {
+                datasets: [{
+                  data: {{ data|safe }},
+                  backgroundColor: [
+                    '#1C77B6', '#ff4400'
+                  ],
+                  label: 'Budget'
+               }],
+                labels: {{ labels|safe }}
+              },
+              options: {
+                responsive: true
+              }
+            };
+        
+            window.onload = function() {
+              var ctx = document.getElementById('pie-chart').getContext('2d');
+              window.myPie = new Chart(ctx, config);
+            };
+        
+          </script>
+         
+        </div>
+      
+        
+      
+{% endblock %}

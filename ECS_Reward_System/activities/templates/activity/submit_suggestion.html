@@ -1,0 +1,55 @@
+{% extends "homescreen/layout.html" %}
+{% block body %}
+  <center>
+    {% if message %}
+        <div class="alert alert-success alert-dismissible" role="alert">
+           {{message}}
+        </div>
+    {% endif %}
+
+    
+        <h1 class="title"> Submit Activity Suggestion</h1>
+        <br>
+       
+        <div class="glow">
+            
+            <form action="" method="post">
+              {% csrf_token %}
+  
+               <div class="form-group">
+                  <label>Activity Name:</label>
+                  <input type="text" class="form-control" placeholder="activity name" name="name"  required = True, style= width:200px;>
+               </div>
+               <div class="form-group">
+                
+                  <label>Activity Category:</label>
+                  <br>
+
+                  <select name="activity_category" id="activity_category">
+                    {%for category in categories%}
+                    <option value="{{category.category_name}}">{{category.category_name}}</option>
+                    {%endfor%}
+                  </select>
+               
+                </div>
+               <div class="form-group">
+                <label>Activity Description:</label>
+                <input type="text" class="form-control" placeholder="activity description" name="description" required = True, style= width:200px>
+               </div>
+               <div class="form-group">
+                <label>Justification why it's needed for ECS:</label>
+                <input type="text" class="form-control" placeholder="justification" name="justification" required = True, style= width:200px />
+               </div>
+               <div class="form-group">
+                <label>Evidence Needed:</label>
+                <input type="text" class="form-control" placeholder="type of evidence needed" name="evidence" required = True, style= width:200px>
+               </div>
+
+
+            <button type="submit">Submit</button>
+          </form>
+        </div>
+      
+        
+        
+{% endblock %}

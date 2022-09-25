@@ -1,0 +1,15 @@
+{% extends "homescreen/layout.html" %}
+{% block body %}
+<center>
+    <h1>Publish the Activity</h1>
+    <form method = "POST" action = "">
+        {% csrf_token %}
+        <br>
+        {{form.as_p}}
+<button type="submit" class = "btn btn-info" style = "background-color: #1C77B6;width:250px">Publish to the system</button>
+</form>
+<br>
+
+<!-- <a href="after_choose.html" class="btn ">Submit</a> -->
+</center>    
+{% endblock %}

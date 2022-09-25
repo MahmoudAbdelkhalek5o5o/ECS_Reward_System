@@ -1,0 +1,15 @@
+{% extends "homescreen/layout.html" %}
+{% block body %}
+<center>
+<h2>Are you sure you want to delete this activity?</h2>
+<form method="post" action="{% url 'activities:sure_delete_activity' activity.id %}">
+    {% csrf_token %}
+    <button class = "mb-5" type="submit" style="width:200px;">Yes</button>
+ 
+</form>
+<form method="post" action="{% url 'activities:not_sure_delete_activity' activity.id %}">
+    {% csrf_token %}
+    <button class = "mb-5" type="submit" style="width:200px;">No</button>
+</form>
+</center>
+{% endblock %}

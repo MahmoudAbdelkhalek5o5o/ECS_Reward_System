@@ -1,0 +1,79 @@
+{% extends "homescreen/layout.html" %}
+{% block body %}
+  <center>
+      {% if message %}
+      <div class="alert alert-warning" role="alert">
+        {{message}}
+      </div>
+      {% endif %}
+        <h1 class="title"> Submit Activity Request</h1>
+        <br>
+        {% if success_message %}
+
+    
+    <div class="alert alert-success alert-dismissible" role="alert">
+        {{success_message}}
+    </div>
+    {% endif %}
+
+    {% if failure_message %}
+    
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        {{failure_message}}
+     </div>
+    {% endif %}
+    <div class="card">
+        <div class="wrapper">
+          <input type="radio" name="select" id="option-1" checked onclick = "hide()">
+          <input type="radio" name="select" id="option-2" onclick = "show()" >
+            <label for="option-1" class="option option-1">
+              <div class="dot"></div>
+               <span>For myself</span>
+               </label>
+            <label for="option-2" class="option option-2">
+              <div class="dot"></div>
+               <span>For someone</span>
+            </label>
+         </div>
+         
+        <form class = "mt-5" method="post" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {{ form }}
+            <div id="submitted_to" style="visibility: hidden; height:0px">
+            <label>Submitted on behalf of:</label>
+                <input placeholder="write employee's ID" type="text" class="form-control" style="width:350px;" placeholder="Submitted on behalf of" name="submitted_to" id = "box">
+            <br>
+            </div>
+            <input value = "{{activity.id}}"name="activity_id" style="visibility: hidden;height:0px">
+            <input type="text" style="width:350px;visibility: hidden; height:0px" name="activity_id" value = {{activity_id}}>
+
+            <p>{{message}}</p>
+            {% if not request.user.role == "Role.A" %}
+            <button class = "mb-5" type="submit" style="width:200px;" onclick="popup()">Submit Request</button>
+          
+            {% else %}
+        
+         
+                    <form method="post" action="activities:delete_activity {{activity.id}}">
+                     
+                        <button class = "mb-5" type="submit" style="width:200px;">Delete Activity</button>
+                      </form>
+                      {% endif %}
+      </div>
+  </center>
+  <script>
+    function show(){
+      document.getElementById('submitted_to').style.visibility = "visible"
+      document.getElementById('submitted_to').style.height = "50px"
+      document.getElementById('box').required = true
+    }
+    function hide(){
+      document.getElementById('submitted_to').style.visibility = "hidden"
+      document.getElementById('submitted_to').style.height = "0px"
+    }
+    function popup(){
+      alert('{{ popup_message }}');
+    }
+  </script>  
+{% endblock %}

@@ -1,0 +1,80 @@
+{% load static %}
+{% load dict_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | ECS</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link href="{% static 'users/styles.css' %}" rel="stylesheet">
+</head>
+<body>
+  
+
+
+<div class="sidenav">
+    <div class="login-main-text">
+      <h1>Employee Recognition Program<br>
+      <br>
+       <h2>Welcome ECSian!</h2>
+       <p>Delivering Impact</p>
+    </div>
+ </div>
+ <div class="main">
+    <div class="col-md-4 col-sm-12">
+        <img 
+             alt="Image description"
+             src="{% static 'images/Logo.png' %}"/>
+             <h2 class = "mt-2"> Register Here</h2>
+       <div class="register-form mb-5">
+         <div class="form-group">
+          
+            {%if success_message%}
+            <div class="alert alert-success">
+               {{success_message}}
+            </div>
+            {% endif%}
+         </div>
+         
+          <form enctype="multipart/form-data" action="{% url 'register' %}" method="post" class = "needs-validation" novalidate>
+
+            {% csrf_token %}
+            {%for field in form%}
+               {{field.label}}
+               {{field}}{%if error_messages%}{%if error_messages|get_item:field.name %}<div class="alert alert-danger">{{error_messages|get_item:field.name}}</div>{%endif%}{%endif%}
+            {%endfor%}
+            <br>
+             <button class = "btn btn-info" type="submit" style = "width:125px;background-color: #1C77B6;">Register</button>
+          </form>
+          
+       </div>
+        Have an account? <a href="{% url 'login' %}">Login here.</a>
+    </div>
+ </div>
+
+ <script>
+   function validate() {
+  'use strict'
+
+  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  const forms = document.querySelectorAll('.needs-validation')
+
+  // Loop over them and prevent submission
+  Array.from(forms).forEach(form => {
+    form.addEventListener('submit', event => {
+      if (form.checkValidity()) {
+        event.preventDefault()
+        event.stopPropagation()
+      }
+
+      form.classList.add('was-validated')
+    }, false)
+  })
+}
+ </script>
+   
+    
+</body>
+</html>

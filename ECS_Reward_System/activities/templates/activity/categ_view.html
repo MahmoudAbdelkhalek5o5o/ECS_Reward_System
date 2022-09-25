@@ -1,0 +1,161 @@
+{% extends "homescreen/layout.html" %}
+{% block body %}
+<center>
+    {% if not request.user.role == "Role.E" %}
+    <a href="{% url 'activities:create_new_activity' %}"><button class = "btn btn-info" type="submit" style = "background-color: #1C77B6;">Create Activity</button></a>
+            
+            
+    {% endif%}
+<h1>Choose An Activity</h1>
+    
+{% if msg %}
+<div class = "alert alert-success" >
+    {{msg}}
+</div>
+{% endif %}
+
+    {% if not request.user.role == "Role.A" %}
+    <form method = "POST" action = "{% url 'activities:submit_activity_request' %}">
+        {% csrf_token %}
+    {%endif%}
+<div>   
+{% for ActivityCategory in activities_categorized %}
+<div class="card  border-primary ml-4 "style="width:600px;"  >
+    <div class="card-header">
+        {% if ActivityCategory.budget <= 0 %}
+            
+                <!-- <h5 class="card-title"> Activity name: {{ ActivityCategory.activity_description }}</h5> -->
+                <p class="card-text" id = "activities">
+                    <h3> The Category budget has been used up</h3>
+                </p>
+        
+        {% endif %}
+        {% if request.user.role == "Role.A" %}
+            <h1><font size="+3">{{ActivityCategory.category_name}}</font></h1>
+            <a href = "{% url 'activities:edit_category' ActivityCategory.id %}"><button class = "btn btn-info mr-3" style = "background-color: #1C77B6; width: 200px;">Edit Category</button></a>
+            <button class = "btn btn-danger mr-3" value = "{% url 'activities:delete_category' ActivityCategory.id %}" id = "cat{{ActivityCategory.id}}" onclick="viewModal(this.id)" style ="width: 200px;">Delete Category</button>
+        {% else %}
+            <h1>{{ActivityCategory.category_name}}</h1>
+        {% endif %} 
+    </div>      
+    </div>
+    {% if ActivityCategory.category_activities%}
+    <div class="card-body card border-primary mt-2 ml-4" style="width: 600px;">
+        <!-- <h5 class="card-title"> Activity name: {{ ActivityCategory.activity_description }}</h5> -->
+        <p class="card-text" id = "activities">
+    
+            {% for activity in ActivityCategory.category_activities %}   
+            {% if activity.is_approved and not activity.is_archived  and start_date == False and not ActivityCategory.budget <= 0 %}    
+            <ul> 
+                    <center>
+                    <label class="form-check-label" for="flexRadioDefault1"> 
+                        <font size="+2">{{ activity.activity_name }}</font>
+                        <font size="+1">({{activity.points }} points)</font>
+                      </label>
+                    </center>
+                      {% if not request.user.role == "Role.A" %}
+                    <input type="radio" name="choose" value="{{activity.id}}" style="margin-right:10px"/>
+
+                    <br>
+                    {% else %}
+                        <br>
+                        <a href = "{% url 'activities:edit_activity' activity.id %}"><button class = "btn btn-info mr-3" style = "background-color: #1C77B6;">Edit Activity</button></a>
+                        <button class = "btn btn-danger mr-3" id="act{{activity.id}}" value = "{% url 'activities:delete_activity' activity.id %}" onclick="viewModal(this.id)">Delete Activity</button></a>
+                        <!-- <button class = "mb-5" type="submit" style="width:200px;"><a href="{% url 'activities:delete_activity' activity.id %}">Delete Activity</a></button>
+                        <button class = "mb-5" type="submit" style="width:200px;"><a href="{% url 'activities:edit_activity' activity.id %}">Edit Activity</a></button> -->
+                        </br>
+                    <br>     
+                     
+                    {% endif %}   
+            {% endif %}        
+            </ul>
+            {%endfor%}
+          
+            {% else %}
+            
+            <div class="card-body card border-primary mt-2 ml-4" style="width: 600px;">
+                <!-- <h5 class="card-title"> Activity name: {{ ActivityCategory.activity_description }}</h5> -->
+                <p class="card-text" id = "activities">
+                    <h3> There is no Activities in this category</h3>
+                </p>
+            </div>
+            {%endif%}
+        </p>
+    </div>
+    
+</div>
+<br>
+{% endfor %}
+</div>
+    {% if not request.user.role == "Role.A" %}
+    <button type="submit">Continue</button>
+    </form>
+<br>
+{% endif %}
+<!-- <a href="after_choose.html" class="btn ">Submit</a> -->
+</div>
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+  
+    <!-- Modal content -->
+    <div class="modal-content" style="width: 500px">
+      
+      <span class="close">&times;</span>
+      
+      <p>Are you sure you want to delete?</p>
+      <br>
+      <div id="container">
+        <a href ="" id = "delete"><button type="button home-button" id="button1" class=" btn btn-info" style="background-color:rgb(223, 60, 60); width:200px"> Delete</button></a>
+        <button type="button contact-button" id="button2" class=" btn btn-info" style="background-color:rgb(120, 124, 130); width:200px"> Cancel </button>
+      </div>
+    </div>
+  
+</div>
+<script>
+    function viewModal(id){
+        console.log(id)
+        var modal = document.getElementById("myModal");
+        var deleteBtn = document.getElementById("delete");
+    // Get the button that opens the modal
+        if (id.includes('cat')){
+            var catBtn = document.getElementById(id);
+            catBtn.onclick = function() {
+                modal.style.display = "block";
+                deleteBtn.href = catBtn.value
+            }
+        }
+        else{
+            var actBtn = document.getElementById(id);
+            actBtn.onclick = function() {
+            modal.style.display = "block";
+            deleteBtn.href = actBtn.value
+        }
+        } 
+    
+    // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+        var cancel = document.getElementById("button2")
+      cancel.onclick = function() {
+    modal.style.display = "none";}  
+    
+    
+    // When the user clicks on the button, open the modal
+    
+    
+    
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+      modal.style.display = "none";
+    }
+    
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }}
+</script>
+
+</center>    
+{% endblock %}

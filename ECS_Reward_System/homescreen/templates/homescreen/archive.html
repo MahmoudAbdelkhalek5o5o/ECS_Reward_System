@@ -1,0 +1,277 @@
+{% extends "homescreen/layout.html" %}
+{% block body %}
+<div class="container">
+  
+    
+    <h1>Archive</h1>
+  
+    <nav aria-label="Page navigation example">
+        <ul class="pagination" style = 'width:1400px'>
+        {%for datum in data%}
+          <li class="page-item"><a class="page-link" href="{% url 'archive' datum %}">{{datum}}</a></li>
+        {%endfor%}
+        </ul>
+      </nav>
+
+        {%if Users%}
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">username</th>
+                <th scope="col">First Name</th>
+                <th scope="col">Last Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Phone Number</th>
+                <th scope="col">Date Joined</th>
+                <th scope="col">Points</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for user in Users %}
+
+                  <tr>
+                    <th scope="row">{{user.emp_id}}</th>
+                    <td>{{user.username}}</td>
+                    <td>{{user.first_name}}</td>
+                    <td>{{user.last_name}}</td>
+                    <td>{{user.email}}</td>
+                    <td>{{user.phone_number}}</td>
+                    <td>{{user.date_joined}}</td>
+                    <td>{{user.points}}</td>
+                  </tr>
+            {% endfor %}
+                </tbody>
+            </table>
+          {% else %}
+                {%if no_users %}<h3>No Archived Users!</h3>{%endif%}
+        {%endif%}
+
+
+
+            {% if Activities|length > 0%}
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">Category</th>
+                  <th scope="col">Description</th>
+                  <th scope="col">Points</th>
+                  <th scope="col">Evidence Needed</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for activity in Activities %}
+  
+                    <tr>
+                      <th scope="row">{{activity.activity_name}}</th>
+                      <td>{{activity.category.category_name}}</td>
+                      <td>{{activity.activity_description}}</td>
+                      <td>{{activity.points}}</td>
+                      <td>{{activity.evidence_needed}}</td>
+                    </tr>
+              {% endfor %}
+                  </tbody>
+                </table>
+            {% else %}
+                  {%if no_activities %}<h3>No Archived Activities!</h3>
+            {% endif %}
+        {%endif%}
+
+           
+
+            {% if announcemnts|length > 0%}
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                    <th scope="col">Publisher</th>
+                    <th scope="col">Post Text</th>
+                    <th scope="col">PostedAt</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for announcemnt in announcemnts %}
+                    <tr>
+                        <td>{{announcemnt.creator.username}}</td>
+                        <th>{{announcemnt.PostText}}</th>
+                        <td>{{announcemnt.StartDate}}</td>
+                    </tr>
+              {% endfor %}
+                  </tbody>
+                </table>
+            {% else %}
+                  {% if no_announcemnts %}<h3>No Archived Announcemnts!</h3>
+            {% endif %}
+        {% endif %}
+
+
+            {% if Vendors|length > 0%}
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                    <th scope="col">Vendor</th>
+                    <th scope="col">Start Date</th>
+                    <th scope="col">End Date</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for Vendor in Vendors %}
+                    <tr>
+                        <td>{{Vendor.name}}</td>
+                        <th>{{Vendor.start_date}}</th>
+                        <td>{{Vendor.end_date}}</td>
+                    </tr>
+              {% endfor %}
+                  </tbody>
+                </table>
+            {% else %}
+                  {% if no_vendors %}<h3>No Archived Vendors!</h3>
+            {% endif %}
+        {% endif %}
+
+
+            {% if Redemption_requests|length > 0%}
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                    <th scope="col">Requester</th>
+                    <th scope="col">Request Date</th>
+                    <th scope="col">Approval Date</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Approver</th>
+                    <th scope="col">Points</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for request in Redemption_requests %}
+                    <tr>
+                        <td>{{request.employee.username}}</td>
+                        <th>{{request.request_date}}</th>
+                        <td>{{request.approved_date}}</td>
+                        <td>{{request.status}}</td>
+                        <th>{{request.approved_by.username}}</th>
+                        <td>{{request.voucher.points_equivalent}}</td>
+                    </tr>
+              {% endfor %}
+                  </tbody>
+                </table>
+            {% else %}
+                  {% if no_redemption_requests%}<h3>No Archived Redemption Requests!</h3>
+            {% endif %}
+        {% endif %}
+
+            
+            {% if Suggest_Rewards|length > 0%}
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                    <th scope="col">Vendor</th>
+                    <th scope="col">Website</th>
+                    <th scope="col">Reason</th>
+                </tr>
+              </thead>
+              <tbody>
+            {% for request in Suggest_Rewards %}
+                    <tr>
+                        <td>{{request.vendor}}</td>
+                        <th>{{request.website}}</th>
+                        <td>{{request.reason}}</td>
+                    </tr>
+              {% endfor %}
+                  </tbody>
+                </table>
+            {% else %}
+                  {% if no_reward_suggestions %}<h3>No Archived Reward Suggestions!</h3>
+            {% endif %}
+        {% endif %}
+
+
+            {% if Categories|length > 0%}
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Start Date</th>
+                    <th scope="col">End Date</th>
+                    <th scope="col">Category Owner</th>
+                </tr>
+              </thead>
+              <tbody>
+            {% for category in Categories %}
+                    <tr>
+                        <td>{{category.category_name}}</td>
+                        <th>{{category.description}}</th>
+                        <td>{{category.start_date}}</td>
+                        <th>{{category.end_date}}</th>
+                        <td>{{category.owner.username}}</td>
+
+                    </tr>
+              {% endfor %}
+                  </tbody>
+                </table>
+            {% else %}
+                  {%if no_categories%}<h3>No Archived Categories!</h3>
+            {% endif %}
+        {% endif %}
+
+
+
+            {% if ActivityRequests|length > 0%}
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                    <th scope="col">Requester</th>
+                    <th scope="col">Activity</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Submission Date</th>
+                    <th scope="col">Approval Date</th>
+                </tr>
+              </thead>
+              <tbody>
+            {% for request in ActivityRequests %}
+                    <tr>
+                        <td>{{request.emp.username}}</td>
+                        <th>{{request.status}}</th>
+                        <td>{{request.submission_date}}</td>
+                        <td>{{request.activity_approval_date}}</td>
+                        <th>{{request.activity.activity_name}}</th>
+                        <td>{{request.category.category_name}}</td>
+                    </tr>
+              {% endfor %}
+                  </tbody>
+                </table>
+            {% else %}
+                {%if no_activity_requests%}  <h3>No Archived Activity Requests!</h3>
+            {% endif %}
+        {% endif %}
+
+            {% if ActivitySuggestions|length > 0%}
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Justification</th>
+                </tr>
+              </thead>
+              <tbody>
+            {% for request in ActivitySuggestions %}
+                    <tr>
+                        <td>{{request.activity_name}}</td>
+                        <th>{{request.activity_description}}</th>
+                        <td>{{request.category.category_name}}</td>
+                        <td>{{request.justification}}</td>
+                    </tr>
+              {% endfor %}
+                  </tbody>
+                </table>
+            {% else %}
+                  {%if no_activity_suggestions %}<h3>No Archived Activity Suggestion!</h3>
+            {% endif %}
+        {% endif %}
+
+
+{% endblock%}

@@ -1,0 +1,51 @@
+{% extends "homescreen/layout.html" %}
+{% block body %}
+<div class="label">
+
+    <div>
+        <h3 class="p2">Username: {{ activity_submission.emp.username }}</h3>
+        <p class="p2"> Category: {{ activity_submission.category }}
+            <br>
+            Activity:{{ activity_submission.activity }}
+            <br>
+            Evidence_Needed: {{ activity_submission.evidence_needed }}
+            <br>
+            Proof_of_action:<a class="evidence" href="{{ activity_submission.proof_of_action.url }}" download>{{ activity_submission.proof_of_action }}</a>
+            <br>
+            {% if  activity_submission.status   == "Status.A" %}<h3 class="status">Accepted</h3>
+            {% elif activity_submission.status == "Status.D" %}<h3 class="status">Declined</h3>{% endif %}
+        </p>
+        <i class="i2"> {{ activity_submission.submission_date }}</i>
+        <br>
+        
+       
+    </div>
+    <br>
+    <div class="buttons d-flex flex-row justify-content-center align-items-center gap-2"> 
+        <form method="post" action="{% url 'activities:return_request' activity_submission.id %}">
+            {% csrf_token %}
+            <button class="btn btn-outline-success" type="submit" onclick='admin_return_activity()'>Back to Category owner</button>
+        </form>
+        {% if activity_submission.status   == "Status.A" %}
+        <form method="post" action="{% url 'activities:returnpoints' activity_submission.id %}">
+            {% csrf_token %}
+            <button class="btn btn-outline-danger"  type="submit"onclick='admin_return_points()' >Remove Points</button>
+        </form> 
+        {% endif %}
+        
+    </div>
+</div>
+<script>
+    function admin_return_activity(){
+        alert('Successfully sent to category owner')
+    }
+    function admin_return_points(){
+        alert('Points have been removed successfully')
+    }
+</script>
+    
+    
+
+
+
+{% endblock %}

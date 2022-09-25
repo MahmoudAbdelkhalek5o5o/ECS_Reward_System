@@ -1,0 +1,27 @@
+{% extends "homescreen/layout.html" %}
+{% block body %}
+<div>
+    <h1 class="header" >Redemption Requests:</h1>
+    </div>
+    <div class="row req">
+        {% for redemption_request in redemption_requests %}
+       
+     
+        <div class="col-6 col-md-6 col-sm-12">
+        
+    
+                <a href="{% url 'view_redemption_request' redemption_request.id %}">
+                    <button class="label" type="button">        
+            <p> {{ redemption_request.voucher.vendor.name }}</p>
+            <p> {{ redemption_request.request_date }}
+                {% if  redemption_request.status   == "Status.A" %}<h3>Accepted</h3>
+            {% elif redemption_request.status == "Status.D" %}<h3>Declined</h3>{% endif %}
+            </p>
+            </button>
+            </a>
+            
+            
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}

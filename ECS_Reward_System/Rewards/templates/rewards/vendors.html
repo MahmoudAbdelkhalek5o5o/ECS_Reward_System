@@ -1,0 +1,44 @@
+{% extends "homescreen/layout.html" %}
+
+{% block body %}
+{% if message %}
+<center>
+<div class="alert alert-success alert-dismissible" role="alert">
+   {{message}}
+</div>
+</center>
+{% endif %}
+{% if request.user.role == "Role.A" %}
+<div style="margin-left: 10px;">
+
+ 
+<button class="btn btn-outline-primary"><a style = "text-decoration:none;" href="{% url 'create_vendor' %}" >Create Vendor </a></button>
+
+   
+    <button class="btn btn-outline-primary"><a style = "text-decoration:none;" href="{% url 'create_reward' %}">Create Reward</a></button>
+
+
+{% endif %}
+<h2>Vendor List</h2>
+</div>
+<div class="row" >
+    {% for vendor in vendors %}
+        <div class="col-12 col-md-6 col-ssm-12 border border-secondary rounded">
+            <a href="{% url 'vendor' vendor.id %}">
+            <h2 class="listings"> {{ vendor.name }}</h2>
+            <div class="listings">
+                <img src="{{ vendor.img.url }}" width="60%" height="300px" class="rounded-top">
+             </div>
+             
+            <p class="wrap">Description: {{ vendor.end_date }}</p>
+           
+
+        </a>
+
+
+
+        </div>
+        {% endfor %}
+
+</div>
+{% endblock %}

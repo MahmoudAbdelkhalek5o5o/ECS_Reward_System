@@ -1,0 +1,33 @@
+{% extends "homescreen/layout.html" %}
+{% block body %}
+<div class="container label">
+
+    <div>
+        <h3 class="p2">Username: {{ activity_submission.emp.username }}</h3>
+        <p class="p2"> Category: {{ activity_submission.category }}
+            <br>
+            Activity:{{ activity_submission.activity }}
+            <br>
+            Evidence_Needed: {{ activity_submission.evidence_needed }}
+            <br>
+            Proof_of_action:<a href="{{ activity_submission.proof_of_action.url }}" download>{{ activity_submission.proof_of_action }}</a>
+            <br>
+            Status: {{ activity_submission.status }}
+        </p>
+        <i class="i2"> {{ activity_submission.submission_date }}</i>
+    </div>
+    <div class="d-flex flex-row justify-content-center align-items-center gap-2"> 
+        <form method="post" action="{% url 'activities:activity_accept' activity_submission.id %}">
+            {% csrf_token %}
+            <button class="btn btn-outline-success" type="submit">Approve</button>
+        </form>
+        <form method="post" action="{% url 'activities:activity_decline' activity_submission.id %}">
+            {% csrf_token %}
+            <button class="btn btn-outline-danger"  type="submit">Decline</button>
+        </form> 
+    </div>
+    
+
+</div>
+
+{% endblock %}
