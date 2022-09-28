@@ -92,7 +92,6 @@ def register(request):
             user["img"]=request.FILES["img"]
         else:
             user.pop('img')
-        print(user)
         user['phone_number'] = user['number_0'] + " " + user["number_1"]
         # form constraints
         error_messages = get_error_messages_register(user)
@@ -103,68 +102,48 @@ def register(request):
         # phone number validation error
         if not form.is_valid():
             error_messages['number']="Enter a valid phone number (e.g. (20) 01000123456) or a number with an international call prefix."
-            return render(request, "accounts/sign_up.html", {
-                "error_messages": error_messages,
-                'form':form
-            })
         # form validation errors
-        else:
-            if not error_messages == {}:
-                print(error_messages)
-                return render(request, "accounts/sign_up.html", {
+
+        # username already exists
+        if not 'username' in error_messages:
+            if User.objects.filter(username=user["username"], is_archived=False).exists() or UserRegisterationRequests.objects.filter(username=user["username"], is_archived=False).exists():
+                error_messages['username'] = "Username Already Exists"
+        # ID already exists
+        if not 'emp_id' in error_messages:
+            if User.objects.filter(emp_id=user["emp_id"], is_archived=False).exists() or UserRegisterationRequests.objects.filter(emp_id=user["emp_id"], is_archived=False).exists():
+                error_messages['emp_id'] = "ID Already Exists"
+        # email already exists
+        if not 'email' in error_messages:
+            if User.objects.filter(email=user["email"], is_archived=False).exists() or UserRegisterationRequests.objects.filter(email=user["email"], is_archived=False).exists():
+                error_messages['email'] = "Email Already Exists"
+        # phone number already exists
+        if not 'number' in error_messages:
+            if User.objects.filter(phone_number=user["phone_number"], is_archived=False).exists() or UserRegisterationRequests.objects.filter(phone_number=user["phone_number"], is_archived=False).exists():
+                error_messages['number'] = "Phone number Already Exists"
+            
+        if not error_messages == {}:
+            print(error_messages)
+            return render(request, "accounts/sign_up.html", {
                 "error_messages": error_messages,
                 'form':form,
             })
         # Attempt to create new user
-            try:
-                # database constraints errors
-                
-                # username already exists
-                if User.objects.filter(username=user["username"], is_archived=False).exists():
-                    error_messages['username'] = "Username Already Exists"
-                    return render(request, "accounts/sign_up.html", {
-                        "error_messages": error_messages,
-                        "message": "Username Already Exists",
-                        'form':form
-                    })
-                # ID already exists
-                if User.objects.filter(emp_id=user["emp_id"]).exists():
-                    error_messages['emp_id'] = "ID Already Exists"
-                    return render(request, "accounts/sign_up.html", {
-                        "error_messages": error_messages,
-                        "message": "ID Already Exists",
-                        'form':form
-                    })
-                # email already exists
-                if User.objects.filter(email=user["email"]).exists():
-                    error_messages['email'] = "Email Already Exists"
-                    return render(request, "accounts/sign_up.html", {
-                        "error_messages": error_messages,
-                        "message": "Email Already Exists",
-                        'form':form
-                    })
-                # phone number already exists
-                if User.objects.filter(phone_number=user["phone_number"]).exists():
-                    error_messages['number'] = "Phone number Already Exists"
-                    return render(request, "accounts/sign_up.html", {
-                        "error_messages": error_messages,
-                        "message": "Phone number Already Exists",
-                        'form':form
-                    })
-                UserRegisterationRequests.objects.create(**user)
-                # user request created successfully
+        try:
+            # database constraints errors
+            UserRegisterationRequests.objects.create(**user)
+            # user request created successfully
+            return render(request, "accounts/sign_up.html", {
+                "success_message": "Registeration request has been submitted and will be reviewed by HR soon",
+                'form':RegisterForm()
+                })
+        except IntegrityError:
+            # username already exists
+            
+            if UserRegisterationRequests.objects.filter(emp_id=request.POST["emp_id"], is_archived=False).exists():
                 return render(request, "accounts/sign_up.html", {
-                    "success_message": "Registeration request has been submitted and will be reviewed by HR soon",
-                    'form':RegisterForm()
-                    })
-            except IntegrityError:
-                # username already exists
-                
-                if UserRegisterationRequests.objects.filter(emp_id=request.POST["emp_id"], is_archived=False).exists():
-                    return render(request, "accounts/sign_up.html", {
-                        "message": "Your request is pending",
-                        'form':form
-                    })
+                    "message": "Your request is pending",
+                    'form':form
+                })
     else:
         return render(request, "accounts/sign_up.html", {'form':RegisterForm()
         })
@@ -272,9 +251,7 @@ def userEdit(request):
                     }
                            )
                     
-                    
-                    
-             
+                        
                 else:   
                     user_form.save('user_form.is_valid()')
                 
@@ -292,6 +269,56 @@ def userEdit(request):
        
 
         return render(request, 'accounts/useredit_form.html', {'user_form': user_form})
+    else:
+        return redirect("login")
+
+
+def admin_edit_user(request,emp_id):
+    if request.user.role == "Role.A":
+      
+        emp = UpdateUserForm.objects.get(pk = emp_id)
+        if request.method == 'POST':
+            user_form = UpdateUserForm(request.POST , request.FILES, instance = emp)
+            
+            if user_form.is_valid():
+              
+                if not user_form.validate_phone_number() and emp.phone_number == user_form.validate_phone_number():
+                 
+                    return render(request, 'accounts/edit_register_request.html', {
+                        'user_form': user_form,
+                        'message':'Phone number already exists',
+                        'emp': emp
+                    }
+                    )
+                   
+                if not user_form.clean_username():
+                     return render(request, 'accounts/edit_register_request.html', {
+                        'user_form': user_form,
+                           'message':'Username already exists',
+                           'emp': emp
+                    }
+                           )
+                    
+                    
+                    
+             
+                else:   
+                    User.object.filter(emp_id = emp_id).update(username = request.POST['username'], first_name = request.POST['first_name'],
+                                            last_name = request.POST['last_name'], email = request.POST['email'],
+                                            phone_number = request.POST['phone_number'], role = request.POST['role'])
+                
+    
+                    messages.success(request, 'Your profile is updated successfully')
+                    return redirect(to='users-home')
+            else:   
+                    User.object.filter(pk = emp_id).update(username = request.POST['username'], first_name = request.POST['first_name'],
+                                            last_name = request.POST['last_name'], email = request.POST['email'],
+                                            phone_number = request.POST['phone_number'], role = request.POST['role'])
+        else:
+            user_form = UpdateUserForm(instance=emp)
+       
+
+        return render(request, 'accounts/edit_register_request.html', {'user_form': user_form , 'emp': emp})
     else:
         return redirect("login")
 
@@ -362,7 +389,15 @@ def view_profile(request,emp_id):
     return render(request,"accounts/profile_view.html",{
         "register_request":register_request
 })
-            
+
+
+def view_user(request,id):
+    user = User.objects.get(pk = id)
+    return render(request,"accounts/admin_view_user.html",{
+        "user":user
+})
+
+
     
 def profiles(request):
     if request.user.role == "Role.A":
@@ -445,66 +480,45 @@ def admin_create_user(request):
         # phone number validation error
         if not form.is_valid():
             error_messages['number']="Enter a valid phone number (e.g. (20) 01000123456) or a number with an international call prefix."
+        if not 'username' in error_messages:
+            if User.objects.filter(username=user["username"], is_archived=False).exists() or UserRegisterationRequests.objects.filter(username=user["username"], is_archived=False).exists():
+                error_messages['username'] = "Username Already Exists"
+        # ID already exists
+        if not 'emp_id' in error_messages:
+            if User.objects.filter(emp_id=user["emp_id"], is_archived=False).exists() or UserRegisterationRequests.objects.filter(emp_id=user["emp_id"], is_archived=False).exists():
+                error_messages['emp_id'] = "ID Already Exists"
+        # email already exists
+        if not 'email' in error_messages:
+            if User.objects.filter(email=user["email"], is_archived=False).exists() or UserRegisterationRequests.objects.filter(email=user["email"], is_archived=False).exists():
+                error_messages['email'] = "Email Already Exists"
+        # phone number already exists
+        if not 'number' in error_messages:
+            if User.objects.filter(phone_number=user["phone_number"], is_archived=False).exists() or UserRegisterationRequests.objects.filter(phone_number=user["phone_number"], is_archived=False).exists():
+                error_messages['number'] = "Phone number Already Exists"
+            
+        if not error_messages == {}:
+            print(error_messages)
             return render(request, "accounts/admin_create_user.html", {
                 "error_messages": error_messages,
-                'form':form
-            })
-        # form validation errors
-        else:
-            if not error_messages == {}:
-                return render(request, "accounts/admin_create_user.html", {
-                "error_messages": error_messages,
-                'form':form
+                'form':form,
             })
         # Attempt to create new user
-            try:
-                # database constraints errors
-                
-                # username already exists
-                if User.objects.filter(username=user["username"], is_archived=False).exists():
-                    error_messages['username'] = "Username Already Exists"
-                    return render(request, "accounts/admin_create_user.html", {
-                        "error_messages": error_messages,
-                        "message": "Username Already Exists",
-                        'form':form
-                    })
-                # ID already exists
-                if User.objects.filter(emp_id=user["emp_id"]).exists():
-                    error_messages['emp_id'] = "ID Already Exists"
-                    return render(request, "accounts/admin_create_user.html", {
-                        "error_messages": error_messages,
-                        "message": "ID Already Exists",
-                        'form':form
-                    })
-                # email already exists
-                if User.objects.filter(email=user["email"]).exists():
-                    error_messages['email'] = "Email Already Exists"
-                    return render(request, "accounts/admin_create_user.html", {
-                        "error_messages": error_messages,
-                        "message": "Email Already Exists",
-                        'form':form
-                    })
-                # phone number already exists
-                if User.objects.filter(phone_number=user["phone_number"]).exists():
-                    error_messages['number'] = "Phone number Already Exists"
-                    return render(request, "accounts/admin_create_user.html", {
-                        "error_messages": error_messages,
-                        "message": "Phone number Already Exists",
-                        'form':form
-                    })
-                User.objects.create_user(**user)
-                # user request created successfully
+        try:
+            # database constraints errors
+            # username already exists
+            User.objects.create_user(**user)
+            # user request created successfully
+            return render(request, "accounts/admin_create_user.html", {
+                "success_message": "User Created Successfully",
+                'form':SignupForm()
+                })
+        except IntegrityError:
+            # username already exists
+            
+            if UserRegisterationRequests.objects.filter(emp_id=request.POST["emp_id"], is_archived=False).exists():
                 return render(request, "accounts/admin_create_user.html", {
-                    "success_message": "User Created Successfully",
-                    'form':SignupForm()
-                    })
-            except IntegrityError:
-                # username already exists
-                
-                if UserRegisterationRequests.objects.filter(emp_id=request.POST["emp_id"], is_archived=False).exists():
-                    return render(request, "accounts/admin_create_user.html", {
-                        "message": "Your request is pending",
-                        'form':form
-                    })
+                    "message": "Your request is pending",
+                    'form':form
+                })
     else:
         return render(request, "accounts/admin_create_user.html", {'form':SignupForm()})

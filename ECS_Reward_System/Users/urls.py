@@ -14,8 +14,9 @@ urlpatterns = [
     path('<int:request_id>/accepted/', views.Admin_accept_register, name='register_accept'),
     path('<int:request_id>/rejected/', views.Admin_reject_register, name='register_reject'),
     path('request/<int:emp_id>', views.view_profile, name='view_profile'),
+    path('view_user/<int:id>', views.view_user, name='view_user'),
     path('edit_request/<int:emp_id>', views.edit_register_request, name='edit_request'),
     path('profile_view',views.profiles , name = "all_profiles"),
     path('profile_view/Create_Account',views.admin_create_user , name = "admin_create_user"),
-    
+    path('admin_edit_user/<int:id>',views.admin_edit_user , name = "admin_edit_user"),
 ]

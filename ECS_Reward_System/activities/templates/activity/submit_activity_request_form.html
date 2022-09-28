@@ -53,13 +53,11 @@
             <button class = "mb-5" type="submit" style="width:200px;" onclick="popup()">Submit Request</button>
           
             {% else %}
-        
-         
                     <form method="post" action="activities:delete_activity {{activity.id}}">
                      
                         <button class = "mb-5" type="submit" style="width:200px;">Delete Activity</button>
                       </form>
-                      {% endif %}
+            {% endif %}
       </div>
   </center>
   <script>

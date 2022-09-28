@@ -45,7 +45,7 @@
         <p class="card-text" id = "activities">
     
             {% for activity in ActivityCategory.category_activities %}   
-            {% if activity.is_approved and not activity.is_archived  and start_date == False and not ActivityCategory.budget <= 0 %}    
+            {% if activity.is_approved and not activity.is_archived %}    
             <ul> 
                     <center>
                     <label class="form-check-label" for="flexRadioDefault1"> 
@@ -88,7 +88,7 @@
 {% endfor %}
 </div>
     {% if not request.user.role == "Role.A" %}
-    <button type="submit">Continue</button>
+    <button class = "btn btn-info mr-3" style = "background-color: #1C77B6;" type="submit">Continue</button>
     </form>
 <br>
 {% endif %}
@@ -114,7 +114,6 @@
 </div>
 <script>
     function viewModal(id){
-        console.log(id)
         var modal = document.getElementById("myModal");
         var deleteBtn = document.getElementById("delete");
     // Get the button that opens the modal

@@ -1,15 +1,23 @@
 {% extends "homescreen/layout.html" %}
 {% block body %}
+{% load dict_tags%}
 <center>
-    <h1>Not Approved Activities</h1>
+   <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-center" style = 'width:1400px'>
+        <li onclick="makeBold(this.id)" id = "1" class="page-item" style ="color:#1C77B6; font-size:20px; border-radius: 15px;"><a class="page-link">Not Approved Activities</a></li>
+        <li onclick="makeBold(this.id)" id = "2" class="page-item"><a class="page-link">Pending Edition Categories</a></li>
+        <li onclick="makeBold(this.id)" id = "3" class="page-item"><a class="page-link">Pending Deletion Categories</a></li>
+        <li onclick="makeBold(this.id)" id = "4" class="page-item"><a class="page-link">Pending Edition Activities</a></li>
+        <li onclick="makeBold(this.id)" id = "5" class="page-item"><a class="page-link">Pending Deletion Activities</a></li>
+      </ul>
+    </nav>
+<div id = "data1">
 {% for activity in activities %}
-
-<div class="card" style="width:597px">
+<div class="card" style="width:900px">
     <div class="card-header">
-        {{activity.activity_name}}  
+        {{activity.activity_name}}
     </div>
     <div class="card-body">
-        <!-- <h5 class="card-title"> Activity name: {{ ActivityCategory.activity_description }}</h5> -->
         <p class="card-text" id = "activities">     
             <ul>
                     <label class="form-check-label" for="flexRadioDefault1"> 
@@ -43,7 +51,6 @@
                           </div>
                           {% endif %}
                           <div class="col-sm">
-                            <!-- <a href = "{% url 'activities:delete_not_approved_activity' activity.id %}"><button class = "btn btn-danger" type="submit">Delete</button></a> -->
                             <button class = "btn btn-danger mr-3" value = "{% url 'activities:delete_not_approved_activity' activity.id %}" id = "{{activity.id}}" onclick="viewModal(this.id)" style ="width: 200px;">Delete</button>
 
                           </div>
@@ -55,45 +62,362 @@
 </div>
 <br>
 {% endfor %}
+</div>
+
+<!--####################################################################################-->
+
+<div id="data3" style="visibility: hidden;">
+{% for category in pending_delete_categories %}
+<div class="card" style="width:900px">
+  <div class="card-header"  style="font-size:22px">
+      {{category.category_name}}  
+  </div>
+  <div class="card-body"  style="font-size:19px"> 
+      <!-- <h5 class="card-title"> Activity name: {{ ActivityCategory.activity_description }}</h5> -->
+      <p class="card-text" id = "activities">     
+          <ul>
+                  <label class="form-check-label" for="flexRadioDefault1"> 
+                      Description: {{ category.description }}
+                  </label>
+                  <br>
+                  <br>
+                      <label class="form-check-label" for="flexRadioDefault1"> 
+                      Budget: {{ category.budget }}
+                  </label>
+                  <br>
+                  <br>
+                      <label class="form-check-label" for="flexRadioDefault1"> 
+                      End Date: {{ category.end_date }}
+                  </label>
+                  <div class="container">
+                      <div class="row">
+                        <div class="col-sm">
+                          <button class = "btn btn-danger mr-3" value = "{% url 'activities:admin_delete_category_change' category.id %}" id = "cat{{category.id}}" onclick="viewModalDecline(this.id)" style ="width: 200px;">Decline Deletion</button>
+                          <button class = "btn btn-info mr-3" style = "background-color: #1C77B6;width: 200px;" value = "{% url 'activities:admin_approve_category_change' category.id %}" id = "ca{{category.id}}" onclick="viewModalApprove(this.id)" style ="width: 200px;">Approve Deletion</button>
+                        </div>
+                      </div>
+                    </div>
+          </ul>
+      </p>
+  </div>
+</div>
 <br>
-<!-- The Modal -->
-<div id="myModal" class="modal">
+{% endfor %}
+</div>
+<!--#######################################################################-->
+
+
+<div id="data5" style="visibility: hidden;">
+    {% for activity in pending_delete_activities %}
+<div class="card" style="width:900px">
+  <div class="card-header" style="font-size: 22px;">
+      {{activity.activity_name}}  
+  </div>
+  <div class="card-body" style="font-size: 19px;">
+      <p class="card-text" id = "activities" style="font-size:19px">     
+          <ul>
+                   <label class="form-check-label" for="flexRadioDefault1"> 
+                    Category: {{ categories|get_item:activity.original_activity.id }}
+                    </label>
+                    <br>
+                    <br>
+                  <label class="form-check-label" for="flexRadioDefault1"> 
+                      Description: {{ activity.activity_description }}
+                  </label>
+                  <br>
+                  <br>
+                      <label class="form-check-label" for="flexRadioDefault1"> 
+                      Points: {{ activity.points }}
+                  </label>
+                  <br>
+                  <br>
+                      <label class="form-check-label" for="flexRadioDefault1"> 
+                      End Date: {{ activity.end_date }}
+                  </label>
+                  <div class="container">
+                      <div class="row">
+                        <div class="col-sm">
+                          <button class = "btn btn-danger mr-3" value = "{% url 'activities:admin_delete_activity_change' activity.id %}" id = "act{{activity.id}}" onclick="viewModalDecline(this.id)" style ="width: 200px;">Decline Deletion</button>
+                          <button class = "btn btn-info mr-3" style = "background-color: #1C77B6;width: 200px;" value = "{% url 'activities:admin_approve_activity_change' activity.id %}" id = "ac{{activity.id}}" onclick="viewModalApprove(this.id)" style ="width: 200px;">Approve Deletion</button>
+                        </div>
+                      </div>
+                    </div>
+          </ul>
+      </p>
+  </div>
+</div>
+<br>
+{% endfor %}
+</div>
+
+<div id="data2" style="visibility: hidden;">
+  {% for category in pending_update_categories %}
+<div class="card" style="width:900px">
+<div class="card-header">
+  <div class="row">
+    <div class="col-md-6" style="font-size:20px;color:grey">Old Data</div>
+    <div class="col-md-6" style="font-size:20px;color:#1C77B6">New Data</div>
+  </div>
+</div>
+<div class="card-body">
+    <p class="card-text" id = "activities">     
+        <ul>
+          <div class="row">
+            <div class="col-md-6" style="font-size:19px">
+              <label class="form-check-label" for="flexRadioDefault1"> 
+                Category Name: {{ category.original_category.category_name }}
+            </label>
+            <br>
+            <br>
+              <label class="form-check-label" for="flexRadioDefault1"> 
+                Description: {{ category.original_category.description }}
+            </label>
+            <br>
+            <br>
+                <label class="form-check-label" for="flexRadioDefault1"> 
+                Budget: {{ category.original_category.budget }}
+            </label>
+            <br>
+            <br>
+                <label class="form-check-label" for="flexRadioDefault1"> 
+                End Date: {{ category.original_category.end_date }}
+            </label>
+            <br>
+            <br>
+            <a href ="{% url 'activities:admin_delete_category_change' category.id %}"><button class = "btn btn-info mr-3" style = "background-color: grey;"value = "{% url 'activities:admin_delete_category_change' category.id %}" id = "cat{{category.id}}" onclick="viewModalDecline(this.id)" style ="width: 200px;">Keep Old Data</button></a>
+            </div>
+            <div class="col-md-6" style="font-size:19px">
+              <label class="form-check-label" for="flexRadioDefault1"> 
+                Category Name: {{ category.category_name }}
+            </label>
+            <br>
+            <br>
+              <label class="form-check-label" for="flexRadioDefault1"> 
+                Description: {{ category.description }}
+            </label>
+            <br>
+            <br>
+                <label class="form-check-label" for="flexRadioDefault1"> 
+                Budget: {{ category.budget }}
+            </label>
+            <br>
+            <br>
+                <label class="form-check-label" for="flexRadioDefault1"> 
+                End Date: {{ category.end_date }}
+            </label>
+            <br>
+            <br>
+            <button class = "btn btn-info mr-3" style = "background-color: #1C77B6;width: 200px;" value = "{% url 'activities:admin_approve_category_change' category.id %}" id = "ca{{category.id}}" onclick="viewModalApprove(this.id)" style ="width: 200px;">Approve New Data</button>
+            </div>
+          </div>
+        </ul>
+    </p>
+</div>
+</div>
+<br>
+{% endfor %}
+</div>
+
+<div id="data4" style="visibility: hidden;">
+  {% for activity in pending_update_activities %}
+<div class="card" style="width:900px">
+<div class="card-header">
+  <div class="row">
+    <div class="col-md-6" style="font-size:20px;color:grey">Old Data</div>
+    <div class="col-md-6" style="font-size:20px;color:#1C77B6">New Data</div>
+  </div>  
+</div>
+<div class="card-body">
+    <p class="card-text" id = "activities">     
+        <ul>
+          <div class="row" style="font-size:19px">
+            <div class="col-md-6">
+              <label class="form-check-label" for="flexRadioDefault1"> 
+                Activity Name: {{activity.original_activity.activity_name}}
+                </label>
+              <br>
+              <br>
+              <label class="form-check-label" for="flexRadioDefault1"> 
+                Category: {{ categories|get_item:activity.original_activity.category_id }}
+                </label>
+                <br>
+                <br>
+              <label class="form-check-label" for="flexRadioDefault1"> 
+                Description: {{ activity.original_activity.activity_description }}
+              </label>
+              <br>
+              <br>
+                  <label class="form-check-label" for="flexRadioDefault1"> 
+                    Points: {{ activity.original_activity.points }}
+              </label>
+              <br>
+              <br>
+                  <label class="form-check-label" for="flexRadioDefault1"> 
+                    End Date: {{ activity.original_activity.end_date }}
+              </label>
+              <br>
+              <br>
+              <a href="{% url 'activities:admin_delete_activity_change' activity.id %}"><button class = "btn btn-infomr-3" style = "background-color: grey;width: 200px;color: white;" value = "{% url 'activities:admin_delete_activity_change' activity.id %}" id = "act{{activity.id}}" style ="width: 200px;">Keep Old Data</button></a>
+            </div>
+            <div class="col-md-6" >
+              <label class="form-check-label" for="flexRadioDefault1"> 
+                Activity Name: {{activity.activity_name}}
+              </label>
+            <br>
+            <br>
+              <label class="form-check-label" for="flexRadioDefault1"> 
+                Category: {{ categories|get_item:activity.original_activity.category_id }}
+                </label>
+                <br>
+                <br>
+              <label class="form-check-label" for="flexRadioDefault1"> 
+                Description: {{ activity.activity_description }}
+              </label>
+              <br>
+              <br>
+                  <label class="form-check-label" for="flexRadioDefault1"> 
+                    Points: {{ activity.points }}
+              </label>
+              <br>
+              <br>
+                  <label class="form-check-label" for="flexRadioDefault1"> 
+                    End Date: {{ activity.end_date }}
+              </label>
+              <br>
+              <br>
+              <button class = "btn btn-info mr-3" style = "background-color: #1C77B6;width: 200px;" value = "{% url 'activities:admin_approve_activity_change' activity.id %}" id = "ac{{activity.id}}" onclick="viewModalApprove(this.id)" style ="width: 200px;">Approve New Data</button>
+            </div>
+          </div>
+        </ul>
+    </p>
+</div>
+</div>
+<br>
+{% endfor %}
+</div>
+
+<!-- The Modals -->
+<div id="myModalDecline" class="modal">
   
     <!-- Modal content -->
     <div class="modal-content" style="width: 500px">
       
-      <span class="close">&times;</span>
       
       <p>Are you sure you want to delete?</p>
       <br>
-      <div id="container">
-        <a href ="" id = "delete"><button type="button home-button" id="button1" class=" btn btn-info" style="background-color:rgb(223, 60, 60); width:200px"> Delete</button></a>
-        <button type="button contact-button" id="button2" class=" btn btn-info" style="background-color:rgb(120, 124, 130); width:200px"> Cancel </button>
+      <div id="container1">
+        <a href ="" id = "decline"><button type="button home-button" id="button1Decline" class=" btn btn-info" style="background-color:rgb(223, 60, 60); width:200px"> Delete</button></a>
+        <button type="button contact-button" id="button2Decline" class=" btn btn-info" style="background-color:rgb(120, 124, 130); width:200px"> Cancel </button>
       </div>
     </div>
   
 </div>
+<div id="myModalApprove" class="modal">
+  
+  <!-- Modal content -->
+  <div class="modal-content" style="width: 500px">
+    
+    
+    <p>Are you sure you want to Approve?</p>
+    <br>
+    <div id="container2">
+      <a href ="" id = "approve"><button type="button home-button" id="button1Approve" class=" btn btn-info" style="background-color:#1C77B6; width:200px"> Approve</button></a>
+      <button type="button contact-button" id="button2Approve" class=" btn btn-info" style="background-color:rgb(120, 124, 130); width:200px"> Cancel </button>
+    </div>
+  </div>
+
+</div>
 <script>
-    function viewModal(id){
-        var modal = document.getElementById("myModal");
-        var deleteBtn = document.getElementById("delete");
+
+
+    function makeBold(id){
+      for (var i =1;i<6; i++){
+        var item = document.getElementById(i+"")
+        item.style.color="Black"
+        item.style.fontSize="15px"
+
+        var content = document.getElementById("data"+i)
+        content.style.visibility = "hidden"
+        content.style.height = "0px";
+      }
+      var item = document.getElementById(id+"")
+      item.style.fontSize="20px"
+      item.style.color = "#1C77B6"
+
+      var content = document.getElementById("data"+id)
+      content.style.visibility = "visible"
+    }
+
+    //
+    function viewModalDecline(id){
+        var modal = document.getElementById("myModalDecline");
+        var deleteBtn = document.getElementById("decline");
     // Get the button that opens the modal
+        if (id.includes('cat')){
             var catBtn = document.getElementById(id);
             catBtn.onclick = function() {
                 modal.style.display = "block";
                 deleteBtn.href = catBtn.value
-            }    
+            }
+        }
+        else{
+            var actBtn = document.getElementById(id);
+            console.log(actBtn)
+            actBtn.onclick = function() {
+            modal.style.display = "block";
+            deleteBtn.href = actBtn.value
+        }
+        } 
+    
     // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("close")[0];
-        var cancel = document.getElementById("button2")
+        var cancel = document.getElementById("button2Decline")
       cancel.onclick = function() {
-    modal.style.display = "none";
-      }
+    modal.style.display = "none";}  
+    
+    
     // When the user clicks on the button, open the modal
+    
+    
+    
     // When the user clicks on <span> (x), close the modal
-    span.onclick = function() {
-      modal.style.display = "none";
-    }
+    
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }}
+
+    function viewModalApprove(id){
+        var modal = document.getElementById("myModalApprove");
+        var deleteBtn = document.getElementById("approve");
+    // Get the button that opens the modal
+        if (id.includes('ca')){
+            var catBtn = document.getElementById(id);
+            catBtn.onclick = function() {
+                modal.style.display = "block";
+                deleteBtn.href = catBtn.value
+            }
+        }
+        else{
+            var actBtn = document.getElementById(id);
+            actBtn.onclick = function() {
+            modal.style.display = "block";
+            deleteBtn.href = actBtn.value
+        }
+        } 
+    
+    // Get the <span> element that closes the modal
+        var cancel = document.getElementById("button2Approve")
+      cancel.onclick = function() {
+    modal.style.display = "none";}  
+    
+    
+    // When the user clicks on the button, open the modal
+    
+    
+    
+    // When the user clicks on <span> (x), close the modal
     // When the user clicks anywhere outside of the modal, close it
     window.onclick = function(event) {
       if (event.target == modal) {

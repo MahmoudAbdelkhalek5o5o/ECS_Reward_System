@@ -23,7 +23,7 @@ class ActivityCategory(models.Model):
     #     return f"{self.category_name}"
 
 class Activity(models.Model):
-    activity_name = models.CharField(max_length=30,null=False, blank= False)
+    activity_name = models.CharField(max_length=30,null=False, blank= False, unique=True)
     activity_description = models.CharField(max_length=1024,null=False, blank= True)
     category = models.ForeignKey(ActivityCategory,on_delete=models.CASCADE,null=False , blank = False)
     points = models.IntegerField(null = False, blank = False)
@@ -83,7 +83,6 @@ class ActivityEdit(models.Model):
     activity_name = models.CharField(max_length=30,null=False, blank= False)
     activity_description = models.CharField(max_length=1024,null=False, blank= True)
     points = models.IntegerField(null = False, blank = False)
-    evidence_needed =  models.CharField(max_length=1024,null=False, blank= False)
     end_date = models.DateTimeField(editable=True,null=True)
     edited = models.BooleanField(null=False,blank = False , default=False)
     deleted = models.BooleanField(null=False,blank = False , default=False)

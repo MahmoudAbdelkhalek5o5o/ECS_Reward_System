@@ -27,7 +27,7 @@
             <h1><font size="+3">{{ActivityCategory.category_name}}</font></h1>
             {% if request.user.emp_id == ActivityCategory.owner%}
             <a href = "{% url 'activities:edit_category_manager' ActivityCategory.id %}"><button type="button" class = "btn btn-info mr-3" style = "background-color: #1C77B6; width: 200px;">Edit Category</button></a>
-            <button type="button" class = "btn btn-danger mr-3" value = "{% url 'activities:delete_category' ActivityCategory.id %}" id = "cat{{ActivityCategory.id}}" onclick="viewModal(this.id)" style ="width: 200px;">Delete Category</button>
+            <button type="button" class = "btn btn-danger mr-3" value = "{% url 'activities:delete_category_manager' ActivityCategory.id %}" id = "cat{{ActivityCategory.id}}" onclick="viewModal(this.id)" style ="width: 200px;">Delete Category</button>
             {% endif %}
     </div>      
     </div>
@@ -51,12 +51,14 @@
                     <br>
 
                         <br>
+                        {% if request.user.emp_id == ActivityCategory.owner%}
                         <a href = "{% url 'activities:edit_activity_manager' activity.id %}"><button type="button" class = "btn btn-info mr-3" style = "background-color: #1C77B6;">Edit Activity</button></a>
-                        <button type="button" class = "btn btn-danger mr-3" id="act{{activity.id}}" value = "{% url 'activities:delete_activity' activity.id %}" onclick="viewModal(this.id)">Delete Activity</button></a>
+                        <button type="button" class = "btn btn-danger mr-3" id="act{{activity.id}}" value = "{% url 'activities:delete_activity_manager' activity.id %}" onclick="viewModal(this.id)">Delete Activity</button></a>
                         <!-- <button class = "mb-5" type="submit" style="width:200px;"><a href="{% url 'activities:delete_activity' activity.id %}">Delete Activity</a></button>
                         <button class = "mb-5" type="submit" style="width:200px;"><a href="{% url 'activities:edit_activity' activity.id %}">Edit Activity</a></button> -->
                         </br>
                     <br>     
+                        {% endif %}
                      
                     {% endif %}   
        
@@ -79,7 +81,7 @@
 <br>
 {% endfor %}
 </div>
-    <button type="submit">Continue</button>
+    <button class = "btn btn-info mr-3" style = "background-color: #1C77B6;"type="submit">Continue</button>
     </form>
 <br>
 <!-- <a href="after_choose.html" class="btn ">Submit</a> -->

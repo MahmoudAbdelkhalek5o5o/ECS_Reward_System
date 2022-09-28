@@ -30,7 +30,7 @@
                           <h4>{{register_request.first_name}} {{register_request.last_name}}</h4>
                           <p class="text-muted">@{{register_request.username}} <span>| </span><span><a href="#" class="text-pink">{{register_request.phone_number}}</a></span></p>
                       </div>
-                      <form action="{% url 'view_profile' register_request.emp_id %}" method="post">
+                      <form action="{% url 'view_user' register_request.emp_id %}" method="post">
                         {% csrf_token %}
                       <button type="submit" class="btn btn-primary mt-3 btn-rounded waves-effect w-md waves-light">View Profile</button>
                     </form>

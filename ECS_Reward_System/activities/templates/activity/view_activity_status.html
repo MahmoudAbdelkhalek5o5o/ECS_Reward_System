@@ -1,0 +1,41 @@
+{% extends "homescreen/layout.html" %}
+{% block body %}
+<center>
+    <ul>
+    <h1>Activity Status</h1>
+    <br>
+    {% if activities %}
+
+        {% for activity in activities %}
+        <div class="card" style="width:600px">
+        <div class="card-header">
+            <h5 class="card-title"><font size="+2">{{ activity.activity_name}}</font></h5>
+        </div>
+        <div class="card-body">
+            <p class="card-text"> 
+                                <ul>
+                    <li style = "font-size:22px;"><b>Category Name: </b>{{activity.category.category_name}}</li>
+                    <br>
+                    <li style = "font-size:22px;"> Status: <p style = "font-size:25px;color:rgb(210, 101, 6)">{% if  not activity.is_approved and not activity.is_archived %} Pending {% endif %}</p>
+                        <p style = "font-size:22px;color:green">{% if activity.is_approved and not activity.is_archived %} Approved {% endif %}</p>
+                        <p style = "font-size:22px;color:rgb(255, 1, 1)">{% if  not activity.is_approved and activity.is_archived %} Declined {% endif %}</p>
+                        <p style = "font-size:22px;color:rgb(150, 1, 1)">{% if  activity.is_approved and activity.is_archived %} Archived {% endif %}</p>
+                    </li>
+                    <!-- {% if activity.activity_approval_date%}<li>Activity Approval Date: {{ activity.activity_approval_date }}</li>{%endif%} -->
+                        </ul> 
+                    </ul>
+
+            </p>
+        </div>
+    </div>
+    <br>
+
+
+    <!-- <strong> {{forloop.counter}}</strong> -->
+        {% endfor %}
+    {% else %}
+    <h1>No Activities to view</h1>
+    {% endif %}
+
+</center>
+{% endblock %}

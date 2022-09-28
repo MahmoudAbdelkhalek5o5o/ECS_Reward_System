@@ -34,7 +34,12 @@ urlpatterns = [
     path('delete_not_approved_activity/<int:activity_id>', views.delete_not_approved_activity, name = "delete_not_approved_activity"),
     path('edit_and_approve_activity/<int:activity_id>', views.edit_and_approve_activity, name = "edit_and_approve_activity"),
     path('create_categ',views.create_category,name = "create_category"),
-    path('delete_category/<int:category_id>', views.delete_category, name='delete_category')
-
-    
+    path('delete_category/<int:category_id>', views.delete_category, name='delete_category'),
+    path('delete_category_manager/<int:ActivityCategory_id>', views.delete_category_manager, name='delete_category_manager'),
+    path('delete_activity_manager/<int:activity_id>', views.delete_activity_manager, name='delete_activity_manager'),
+    path('admin_delete_category_change/<int:ActivityCategory_id>', views.admin_delete_category_change, name='admin_delete_category_change'),
+    path('admin_delete_activity_change/<int:activity_id>', views.admin_delete_activity_change, name='admin_delete_activity_change'),
+    path('admin_approve_category_change/<int:ActivityCategory_id>', views.admin_approve_category_change, name='admin_approve_category_change'),
+    path('admin_approve_activity_change/<int:activity_id>', views.admin_approve_activity_change, name='admin_approve_activity_change'),
+    path('view_activity_status', views.view_activity_status, name='view_activity_status'),    
 ]

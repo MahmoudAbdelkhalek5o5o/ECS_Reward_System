@@ -1,12 +1,17 @@
 {% extends "homescreen/layout.html" %}
 {% block body %}
 <center>
-    <h1>Publish the Activity</h1>
+    <h1>Submit the Activity</h1>
+    {%if Message %}
+    <div class = "alert alert-warning">
+        {{Message}}
+    </div>
+    {%endif%}
     <form method = "POST" action = "">
         {% csrf_token %}
         <br>
         {{form.as_p}}
-<button type="submit" class = "btn btn-info" style = "background-color: #1C77B6;width:250px">Publish to the system</button>
+<button type="submit" class = "btn btn-info" style = "background-color: #1C77B6;width:250px">Submit to the system</button>
 </form>
 <br>
 

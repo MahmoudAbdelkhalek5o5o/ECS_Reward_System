@@ -1,5 +1,6 @@
 from asyncio.windows_events import NULL
 from contextlib import nullcontext
+from pydoc import describe
 from unicodedata import category
 from urllib import request
 from django.shortcuts import render, redirect
@@ -186,7 +187,8 @@ def category_view(request):
             categ_id = category.id
             activities=list(Activity.objects.filter(category = categ_id).values())
             now = utc.localize(datetime.now())
-            activities_categorized.append({'id':category.id,'category_name':category.category_name,'category_activities':activities,"budget":category.budget})
+            activities_categorized.append({'id':category.id,'category_name':category.category_name,'owner':category.owner.emp_id,
+            'category_activities':activities,"budget":category.budget})
         if request.user.role == "Role.M":
             return render(request,"activity/categ_view_manager.html",{
                 "category_list":category_list,
@@ -196,13 +198,13 @@ def category_view(request):
                 'message': "Activity has been successfully submitted",
                 "used_up_budget":used_up_budget,})
         else:
-             return render(request,"activity/categ_view.html",{
+            return render(request,"activity/categ_view.html",{
                 "category_list":category_list,
                 "activities_categorized":activities_categorized,
                 "approved":approved,
                 "activities":activities,
                 'message': "Activity has been successfully submitted",
-                "used_up_budget":used_up_budget,})
+                "used_up_budget":used_up_budget})
     
 def delete_category(request, category_id):
     if request.user.is_authenticated:
@@ -352,7 +354,6 @@ def points_view(request):
         "points":points
 })
 def delete_activity(request,activity_id):
-    activity = Activity.objects.get(pk = activity_id)
     if request.user.role == "Role.A":
         Activity.objects.filter(pk = activity_id).update(is_archived = True)
         return redirect("activities:Category_view")
@@ -637,9 +638,23 @@ def manager_submits_activity(request, suggestion_id):
 def view_not_approved_activities(request):
     if(request.user.is_authenticated):
         if(request.user.role == "Role.A"):
-            activities = Activity.objects.filter(is_approved=False)
+            not_approved_activities = Activity.objects.filter(is_approved=False)
+            pending_update_activities = ActivityEdit.objects.filter(edited=True).select_related('original_activity')
+            pending_delete_activities = ActivityEdit.objects.filter(deleted=True).select_related('original_activity')
+            categories = {}
+            data = ActivityCategory.objects.all()
+            for category in data:
+                categories[category.id]=category.category_name
+            pending_update_categories = ActivityCategoryEdit.objects.filter(edited=True).select_related('original_category')
+            pending_delete_categories = ActivityCategoryEdit.objects.filter(deleted=True).select_related('original_category')
+            print(categories)
             return render(request,'activity/view_not_approved_activities.html',{
-                'activities': activities
+                'not_approved_activities': not_approved_activities,
+                'pending_update_activities':pending_update_activities,
+                'pending_delete_activities':pending_delete_activities,
+                'pending_update_categories':pending_update_categories,
+                'pending_delete_categories':pending_delete_categories,
+                'categories':categories
             })
         else:
             return redirect('users-home')
@@ -735,68 +750,246 @@ def create_category(request):
             return render(request,"activity/create_category.html",{
                 "category_owners": category_owners
             })
-def category_edit_delete(request):
-        if request.user.is_authenticated and request.user.role == "Role.M":
-            if(request.method == "POST"):
-                pass
             
         
 # manager request editing activity
 def edit_activity_manager(request,activity_id):
-    if request.user.is_authenticated and request.user.role == "Role.M":
-        if request.method == 'POST':
-            activity_edit_form = UpdateActivityForm(request.POST)
-            if activity_edit_form.is_valid():
-                if Activity.objects.filter(activity_name=request.POST["activity_name"]).exists():
-                    return redirect("activities:Category_view_manager")
+    if request.user.is_authenticated:
+        if request.user.role == "Role.M" and request.user.emp_id == Activity.objects.get(pk = activity_id).category.owner.emp_id:
+            if request.method == 'POST':
+                activity_edit_form = UpdateActivityForm(request.POST)
+                if activity_edit_form.is_valid():
+                    if Activity.objects.filter(activity_name=request.POST["activity_name"]).exclude(pk=activity_id).exists():
+                        return render(request,"activity/edit_and_approve_activity.html",{
+                            "form":activity_edit_form,
+                            "Message":"Activity name already exists"
+                            })
+                    else:
+                        activity = Activity.objects.get(pk = activity_id)
+                        activity_name=request.POST["activity_name"]
+                        activity_description=request.POST["activity_description"]
+                        print(activity_description)
+                        points=request.POST["points"]
+
+                        if ActivityEdit.objects.filter(original_activity=activity_id).exists():
+                            ActivityEdit.objects.filter(original_activity=activity_id).update(original_activity=activity,activity_name=activity_name,
+                            activity_description=activity_description,points=points, edited = True, deleted=False)
+                        else:
+                            ActivityEdit.objects.create(original_activity=activity,activity_name=activity_name,
+                            activity_description=activity_description,points=points, edited = True, deleted=False)
+                        return redirect("activities:Category_view_manager")
                 else:
-                    activity = Activity.objects.get(pk = activity_id)
-                    activity_name=request.POST["activity_name"]
-                    activity_description=request.POST["activity_description"]
-                    points=request.POST["points"]
-                    evidence_needed=request.POST["evidence_needed"]
-                    ActivityEdit.objects.create(original_activity=activity,activity_name=activity_name,
-                    activity_description=activity_description,points=points,evidence_needed=evidence_needed, edited = True, deleted=False)
-                    return redirect("activities:Category_view_manager")
+                    return render(request,"activity/edit_activity_manager.html",{"category_edit_form":activity_edit_form,
+                    "Message":"Invalid Data"
+                    })  
+            else:
+                this_activity=Activity.objects.filter(pk = activity_id)[0]
+                activity_edit_form=UpdateActivityForm({"activity_name":this_activity.activity_name,
+                "activity_description":this_activity.activity_description,"points":this_activity.points,"evidence_needed":this_activity.evidence_needed})
+                return render(request,"activity/edit_and_approve_activity.html",{"form":activity_edit_form})
         else:
-            this_activity=Activity.objects.filter(pk = activity_id)[0]
-            activity_edit_form=UpdateActivityForm({"activity_name":this_activity.activity_name,
-            "activity_description":this_activity.activity_description,"points":this_activity.points,"evidence_needed":this_activity.evidence_needed})
-            return render(request,"activity/edit_and_approve_activity.html",{"form":activity_edit_form})
+            return redirect('users-home')
+    else:
+        return redirect('login')
 
 
 
 # manager requests editing his category
 
 def edit_category_manager(request,ActivityCategory_id):
-    if request.user.is_authenticated and request.user.role == "Role.M" and request.user.emp_id == ActivityCategory.objects.get(pk = ActivityCategory_id).owner:
-        if request.method == 'POST':
-            category_edit_form = UpdateCategoryForm(request.POST)
-            if category_edit_form.is_valid():
-                if ActivityCategory.objects.filter(category_name=request.POST["category_name"]).exists() and ActivityCategory.objects.get(pk=ActivityCategory_id).description == request.POST["description"]:
-                    return render(request,"activity/edit_category.html",{
-                        "category_edit_form":category_edit_form,
-                        "Message":"Category Name already exists or you haven't changed the form"
-                        })
-                else:
-                    category = ActivityCategory.objects.get(pk = ActivityCategory_id)
-                    category_name=request.POST["category_name"]
-                    description=request.POST["description"]
-                    end_date = request.POST["end_date"]
-                    Budget  =  request.POST["budget"]
-                    if end_date:
-                        ActivityCategoryEdit.objects.create(original_category = category, category_name=category_name,
-                        description=description , end_date = end_date , budget = Budget, edited = True, deleted = False)
+    if request.user.is_authenticated:
+        if request.user.role == "Role.M" and request.user.emp_id == ActivityCategory.objects.get(pk = ActivityCategory_id).owner.emp_id:
+            if request.method == 'POST':
+                category_edit_form = UpdateCategoryForm(request.POST)
+                if category_edit_form.is_valid():
+                    if ActivityCategory.objects.filter(category_name=request.POST["category_name"]).exclude(pk=ActivityCategory_id).exists() and ActivityCategory.objects.get(pk=ActivityCategory_id).description == request.POST["description"]:
+                        return render(request,"activity/edit_category_manager.html",{
+                            "category_edit_form":category_edit_form,
+                            "Message":"Category name already exists"
+                            })
                     else:
-                        ActivityCategoryEdit.objects.create(original_category = category, category_name=category_name,
-                        description=description , budget = Budget, edited = True, deleted = False)
+                        category = ActivityCategory.objects.get(pk = ActivityCategory_id)
+                        category_name=request.POST["category_name"]
+                        description=request.POST["description"]
+                        end_date = request.POST["end_date"]
+                        Budget  =  request.POST["budget"]
+                        if end_date:
+                            if ActivityCategoryEdit.objects.filter(original_category=ActivityCategory_id).exists():
+                                ActivityCategoryEdit.objects.filter(original_category=ActivityCategory_id).update(original_category = category, category_name=category_name,
+                            description=description , end_date = end_date , budget = Budget, edited = True, deleted = False)
+                            else:
+                                ActivityCategoryEdit.objects.create(original_category = category, category_name=category_name,
+                                description=description , end_date = end_date , budget = Budget, edited = True, deleted = False)
+                        else:
+                            if ActivityCategoryEdit.objects.filter(original_category=ActivityCategory_id).exists():
+                                ActivityCategoryEdit.objects.filter(original_category=ActivityCategory_id).update(original_category = category, category_name=category_name,
+                            description=description ,budget = Budget, edited = True, deleted = False)
+                            else:
+                                ActivityCategoryEdit.objects.create(original_category = category, category_name=category_name,
+                                description=description ,budget = Budget, edited = True, deleted = False)
                         
-                    return render(request,"activity/edit_category.html",{
-                        "category_edit_form":category_edit_form,
-                        "success":"Category Updated"
-                        })
+                        return render(request,"activity/edit_category_manager.html",{
+                            "category_edit_form":category_edit_form,
+                            "success":"Category Updated"
+                            })
+                else:
+                    return render(request,"activity/edit_category_manager.html",{"category_edit_form":category_edit_form,
+                    "Message":"Invalid Data"
+                    })  
+            else:
+                this_category=ActivityCategory.objects.filter(pk = ActivityCategory_id)[0]
+                category_edit_form=UpdateCategoryForm({"category_name":this_category.category_name,
+                "description":this_category.description ,"budget":this_category.budget , "end_date":this_category.end_date})
+                return render(request,"activity/edit_category_manager.html",{"category_edit_form":category_edit_form})  
         else:
-            this_category=ActivityCategory.objects.filter(pk = ActivityCategory_id)[0]
-            category_edit_form=UpdateCategoryForm({"category_name":this_category.category_name,
-            "description":this_category.description ,"budget":this_category.budget , "end_date":this_category.end_date})
-            return render(request,"activity/edit_category.html",{"category_edit_form":category_edit_form})  
+            return redirect('users-home')
+    else:
+        return redirect('login')
+
+def delete_activity_manager(request,activity_id):
+    if request.user.is_authenticated:
+        if request.user.role == "Role.M" and request.user.emp_id == Activity.objects.get(pk = activity_id).category.owner.emp_id:
+            if request.method == 'GET':
+                if ActivityEdit.objects.filter(original_activity=activity_id).exists():
+                        ActivityEdit.objects.filter(original_activity=activity_id).update( edited = False, deleted=True)
+                else:            
+                        activity = Activity.objects.get(pk = activity_id)
+                        ActivityEdit.objects.create(original_activity=activity,activity_name=activity.activity_name,
+                        activity_description=activity.activity_description,points=activity.points, edited = False, deleted=True)
+                return redirect("activities:Category_view_manager")
+            else:
+                redirect('users-home')
+        else:
+            return redirect('users-home')
+    else:
+        return redirect('login')
+
+def delete_category_manager(request,ActivityCategory_id):
+    if request.user.is_authenticated:
+        if request.user.role == "Role.M" and request.user.emp_id == ActivityCategory.objects.get(pk = ActivityCategory_id).owner.emp_id:
+            if request.method == 'GET':
+                        if ActivityCategoryEdit.objects.filter(original_category=ActivityCategory_id).exists():
+                            ActivityCategoryEdit.objects.filter(original_category=ActivityCategory_id).update( edited = False, deleted = True)
+                        else:    
+                            category = ActivityCategory.objects.get(pk = ActivityCategory_id)
+                            ActivityCategoryEdit.objects.create(original_category = category, category_name=category.category_name,
+                            description=category.description , end_date = category.end_date , budget = category.budget, edited = False, deleted=True)
+                        return redirect("activities:Category_view_manager")
+            else:
+                return redirect('users-home')
+            
+        else:
+            return redirect('users-home')
+    else:
+        return redirect('login')
+
+
+def admin_delete_category_change(request, ActivityCategory_id):
+    if request.user.is_authenticated:
+        if request.user.role == "Role.A":
+            ActivityCategoryEdit.objects.filter(pk=ActivityCategory_id).delete()
+            return redirect('activities:view_not_approved_activities')
+        else:
+            return redirect('users-home')
+    else:
+        return redirect('login')
+
+
+def admin_delete_activity_change(request, activity_id):
+    if request.user.is_authenticated:
+        if request.user.role == "Role.A":
+            ActivityEdit.objects.filter(pk=activity_id).delete()
+            return redirect('activities:view_not_approved_activities')
+        else:
+            return redirect('users-home')
+    else:
+        return redirect('login')
+
+
+
+def admin_approve_category_change(request, ActivityCategory_id):
+    if request.user.is_authenticated:
+        if request.user.role == "Role.A":
+            edit = ActivityCategoryEdit.objects.get(pk = ActivityCategory_id)
+            if edit.edited:
+                ActivityCategory.objects.filter(pk=edit.original_category.id).update(category_name = edit.category_name, 
+                description = edit.description, end_date = edit.end_date, budget = edit.budget)
+            else:
+                ActivityCategory.objects.filter(pk=edit.original_category.id).update(is_archived=True)
+            edit.delete()
+            return redirect('activities:view_not_approved_activities')
+        else:
+            return redirect('users-home')
+    else:
+        return redirect('login')
+
+
+def admin_approve_activity_change(request, activity_id):
+    if request.user.is_authenticated:
+        if request.user.role == "Role.A":
+            edit = ActivityEdit.objects.get(pk = activity_id)
+            if edit.edited:
+                Activity.objects.filter(pk=edit.original_activity.id).update(activity_name = edit.activity_name, 
+                activity_description = edit.activity_description, end_date = edit.end_date, points = edit.points)
+            else:
+                Activity.objects.filter(pk=edit.original_activity.id).update(is_archived=True)
+            edit.delete()
+            return redirect('activities:view_not_approved_activities')
+        else:
+            return redirect('users-home')
+    else:
+        return redirect('login')
+
+def view_activity_status(request):
+    if request.user.is_authenticated:
+        if request.user.role == "Role.M":
+            categories= ActivityCategory.objects.filter(owner=request.user)
+            activities = Activity.objects.none()
+            for category in categories:
+                data = Activity.objects.filter(category=category).select_related('category')
+                activities|=data
+            return render(request,'activity/view_activity_status.html',{
+                'activities': activities
+            })
+        else:
+            return redirect('users-home')
+    else:
+        return redirect('login')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
